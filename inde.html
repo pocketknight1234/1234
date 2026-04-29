@@ -1,266 +1,1702 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Math Line</title>
-<style>
-:root{
-  --accent:#000;--text:#fff;
-  --bg:#0a0a0a;--card-bg:#1a1a1a;
-  --card-hover:#252525;--border:#333;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);background:var(--bg);overflow-x:hidden;}
-#topbar{position:fixed;top:0;left:0;right:0;height:60px;background:#111;z-index:30;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.5);}
-#logo{font-size:1.5rem;font-weight:900;color:#fff;white-space:nowrap;}
-#search{flex:1;max-width:400px;background:#1a1a1a;color:var(--text);padding:10px 16px;font-size:15px;border-radius:6px;border:1px solid var(--border);outline:none;transition:border-color .2s;}
-#search:focus{border-color:#fff;background:#252525;}
-#search::placeholder{color:#666;}
-#top-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
-#settings-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:#1a1a1a;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
-#settings-btn:hover{background:#252525;}
-#main{position:fixed;top:60px;left:0;right:0;bottom:0;overflow-y:auto;background:var(--bg);}
-#content{padding:32px 24px 40px;max-width:1400px;margin:0 auto;}
-.section-header{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
-.section-title{font-size:1.1rem;font-weight:700;color:#fff;}
-.section-count{font-size:13px;color:#999;}
-#game-list{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;}
-.card{background:var(--card-bg);border-radius:8px;cursor:pointer;overflow:hidden;border:1px solid var(--border);transition:all .2s;position:relative;}
-.card:hover{transform:translateY(-2px);background:var(--card-hover);box-shadow:0 4px 12px rgba(255,255,255,.1);}
-.card-thumb{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:linear-gradient(135deg,#222,#111);}
-.card-initials{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:rgba(255,255,255,.15);}
-.card-info{padding:12px;}
-.card-name{font-size:14px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;}
-.card-fav{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);border:1px solid var(--border);cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:14px;color:#999;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .2s;}
-.card:hover .card-fav{opacity:1;}
-.card-fav.on{color:#ffd700;background:rgba(0,0,0,.9);}
-#overlay{display:none;position:fixed;inset:0;z-index:50;background:#000;flex-direction:column;}
-#overlay.on{display:flex;}
-#gframe{flex:1;width:100%;border:none;}
-#gload{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a1a;z-index:2;}
-#gload.hide{display:none;}
-.spin{border:4px solid #333;border-top:4px solid #fff;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin-bottom:18px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-#bar-wrap{width:260px;height:6px;background:#333;border-radius:99px;overflow:hidden;margin-top:14px;}
-#bar{height:100%;width:0;background:#fff;}
-#fs-btn,#bk-btn{position:fixed;padding:10px 16px;border-radius:6px;border:1px solid #fff;cursor:pointer;z-index:60;font-weight:700;background:#fff;color:#000;display:none;}
-#fs-btn{right:18px;top:18px;}
-#bk-btn{left:18px;top:18px;}
-#fs-btn:hover,#bk-btn:hover{background:#ddd;}
-#drawer{position:fixed;right:-420px;top:0;bottom:0;width:400px;background:#111;z-index:40;transition:right .3s;overflow-y:auto;border-left:1px solid var(--border);}
-#drawer.on{right:0;}
-.dr-head{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-.dr-head h2{color:#fff;font-size:1.2rem;}
-.dr-close{background:none;border:none;color:#999;font-size:24px;cursor:pointer;padding:4px;transition:color .2s;}
-.dr-close:hover{color:#fff;}
-.dr-panel{padding:20px 24px;}
-.sg{margin:16px 0;}
-.sg>span{display:block;color:#999;font-weight:700;font-size:12px;text-transform:uppercase;margin-bottom:10px;}
-.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-.opt{padding:10px;border:1px solid var(--border);border-radius:6px;background:#1a1a1a;color:#fff;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;}
-.opt:hover{background:#252525;border-color:#fff;}
-.opt.on{background:#fff;color:#000;}
-.modal{display:none;position:fixed;z-index:55;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);}
-.modal.on{display:flex;align-items:center;justify-content:center;}
-.modal-box{background:#1a1a1a;padding:32px;border-radius:8px;max-width:480px;width:90%;color:var(--text);border:1px solid var(--border);max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);}
-.modal-thumb{width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;margin-bottom:20px;position:relative;background:#252525;}
-.modal-thumb-title{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:rgba(255,255,255,.15);}
-.mtrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.mtrow h2{flex:1;font-size:1.2rem;color:#fff;}
-.mfav{font-size:24px;background:none;border:none;cursor:pointer;color:#999;transition:color .2s;padding:4px;}
-.mfav:hover,.mfav.on{color:#ffd700;}
-.mstat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
-.mstat:last-of-type{border:none;}
-.mstat b{color:#999;font-weight:600;}
-.mbtns{display:flex;gap:10px;margin-top:20px;justify-content:center;}
-.mbtns button{padding:12px 24px;border:none;border-radius:6px;cursor:pointer;font-weight:700;font-size:14px;transition:all .2s;}
-.mbplay{background:#fff;color:#000;}
-.mbplay:hover{background:#ddd;}
-.mbclose{background:#252525;color:var(--text);border:1px solid var(--border);}
-.mbclose:hover{background:#333;}
-.popup{display:none;position:fixed;z-index:60;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
-.popup.on{display:flex;}
-.popup-box{background:#1a1a1a;padding:40px;border-radius:8px;max-width:520px;width:90%;color:var(--text);border:1px solid var(--border);max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.7);}
-.popup-box h2{margin-top:0;color:#fff;font-size:1.5rem;}
-.popup-box p{line-height:1.8;color:#ccc;margin:14px 0;font-size:14px;}
-.popup-foot{display:flex;gap:10px;margin-top:24px;justify-content:center;}
-.pop-btn{padding:12px 32px;border:none;border-radius:6px;background:#fff;color:#000;font-weight:700;font-size:14px;cursor:pointer;}
-.pop-btn:hover{background:#ddd;}
-@media(max-width:1300px){#game-list{grid-template-columns:repeat(5,1fr);}}
-@media(max-width:1050px){#game-list{grid-template-columns:repeat(4,1fr);}}
-@media(max-width:768px){#game-list{grid-template-columns:repeat(3,1fr);gap:12px;}}
-@media(max-width:480px){#game-list{grid-template-columns:repeat(2,1fr);}}
-</style>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>MathLine</title>
+	<link rel="icon" type="image/svg+xml"
+		href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23E31717'/%3E%3Ccircle cx='50' cy='50' r='33' fill='none' stroke='%23FFF' stroke-width='3'/%3E%3C/svg%3E" />
+	<style>
+		:root {
+			--accent: #fff;
+			--text: #fff;
+			--nav: #0f1419;
+			--nav-w: 0px;
+			--top: #0a0e14;
+			--top-h: 56px;
+			--bg: #0d1117;
+			--card-bg: #161b22;
+			--card-hover: #1c2128;
+			--theme: 'dark';
+			--bg-style: 'stars';
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		html,
+		body {
+			height: 100%;
+			font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+			color: var(--text);
+			background: var(--bg);
+			overflow: hidden;
+		}
+
+		body::before {
+			content: '';
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			z-index: 1;
+			background-image:
+				radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0)),
+				radial-gradient(2px 2px at 60px 70px, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0)),
+				radial-gradient(1px 1px at 50px 50px, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0)),
+				radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0)),
+				radial-gradient(2px 2px at 90px 10px, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0));
+			background-repeat: repeat;
+			background-size: 200px 200px;
+			animation: twinkle 5s ease-in-out infinite;
+		}
+
+		body.bg-none::before {
+			display: none;
+		}
+
+		body.bg-rain::before {
+			background-image:
+				linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent),
+				linear-gradient(rgba(255, 255, 255, .03) 1px, transparent 1px);
+			background-size: 50px 50px;
+			animation: rain 0.3s linear infinite;
+		}
+
+		body.bg-grid::before {
+			background-image:
+				linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent 100%),
+				linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent 100%);
+			background-size: 50px 50px;
+			animation: none;
+		}
+
+		body.bg-dots::before {
+			background-image: radial-gradient(circle, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+			background-size: 20px 20px;
+			animation: none;
+		}
+
+		body.bg-lines::before {
+			background-image: repeating-linear-gradient(0deg,
+					transparent,
+					transparent 49px,
+					rgba(255, 255, 255, 0.1) 49px,
+					rgba(255, 255, 255, 0.1) 50px);
+			animation: none;
+		}
+
+		body.bg-waves::before {
+			background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+			background-size: 100px 100px;
+			animation: wave 2s linear infinite;
+		}
+
+		body.bg-nebula::before {
+			background:
+				radial-gradient(ellipse at 20% 50%, rgba(255, 100, 255, 0.1) 0%, transparent 50%),
+				radial-gradient(ellipse at 80% 50%, rgba(100, 100, 255, 0.1) 0%, transparent 50%),
+				radial-gradient(ellipse at 50% 0%, rgba(100, 255, 200, 0.05) 0%, transparent 50%);
+			animation: nebula 8s ease-in-out infinite;
+		}
+
+		@keyframes twinkle {
+
+			0%,
+			100% {
+				opacity: 0.3;
+			}
+
+			50% {
+				opacity: 0.8;
+			}
+		}
+
+		@keyframes rain {
+			0% {
+				transform: translateY(-100%);
+			}
+
+			100% {
+				transform: translateY(100vh);
+			}
+		}
+
+		@keyframes wave {
+			0% {
+				transform: translateX(0);
+			}
+
+			100% {
+				transform: translateX(100px);
+			}
+		}
+
+		@keyframes nebula {
+
+			0%,
+			100% {
+				opacity: 0.3;
+			}
+
+			50% {
+				opacity: 0.6;
+			}
+		}
+
+		#topbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: var(--top-h);
+			background: var(--top);
+			z-index: 30;
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			padding: 0 16px;
+			border-bottom: 1px solid rgba(255, 255, 255, .1);
+			box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+		}
+
+		#logo {
+			font-size: 1.3rem;
+			font-weight: 800;
+			color: #fff;
+			text-shadow: 0 0 10px rgba(255, 255, 255, .3);
+			white-space: nowrap;
+			letter-spacing: -.5px;
+		}
+
+		#search {
+			flex: 1;
+			max-width: 480px;
+			background: rgba(255, 255, 255, .05);
+			color: var(--text);
+			padding: 8px 14px;
+			font-size: 14px;
+			border-radius: 20px;
+			border: 1px solid rgba(255, 255, 255, .1);
+			outline: none;
+			transition: border-color .2s, background .2s;
+		}
+
+		#search:focus {
+			border-color: rgba(255, 255, 255, .3);
+			background: rgba(255, 255, 255, .1);
+		}
+
+		#search::placeholder {
+			color: rgba(255, 255, 255, .35);
+		}
+
+		#top-right {
+			margin-left: auto;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		#settings-btn {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			border: none;
+			background: rgba(255, 255, 255, .08);
+			color: #fff;
+			font-size: 18px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: background .2s;
+		}
+
+		#settings-btn:hover {
+			background: rgba(255, 255, 255, .15);
+		}
+
+		#info-btn {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			border: none;
+			background: rgba(255, 255, 255, .08);
+			color: #fff;
+			font-size: 18px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: background .2s;
+		}
+
+		#info-btn:hover {
+			background: rgba(255, 255, 255, .15);
+		}
+
+		#nav {
+			display: none;
+		}
+
+		#main {
+			position: fixed;
+			top: var(--top-h);
+			left: 0;
+			right: 0;
+			bottom: 0;
+			overflow-y: auto;
+			background: transparent;
+			scrollbar-width: thin;
+			scrollbar-color: rgba(255, 255, 255, .15) transparent;
+			z-index: 2;
+		}
+
+		#content {
+			padding: 20px 20px 40px;
+		}
+
+		.section-header {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 14px;
+			margin-top: 24px;
+		}
+
+		.section-header:first-child {
+			margin-top: 0;
+		}
+
+		.section-title {
+			font-size: 1rem;
+			font-weight: 700;
+			color: #fff;
+		}
+
+		.section-count {
+			font-size: 12px;
+			color: rgba(255, 255, 255, .4);
+			font-weight: 400;
+		}
+
+		#game-list {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+			gap: 12px;
+		}
+
+		.card {
+			background: var(--card-bg);
+			border-radius: 10px;
+			cursor: pointer;
+			overflow: hidden;
+			border: 1px solid rgba(255, 255, 255, .1);
+			transition: transform .2s, border-color .2s, background .2s, box-shadow .2s;
+			position: relative;
+		}
+
+		.card:hover {
+			transform: translateY(-3px) scale(1.02);
+			border-color: rgba(255, 255, 255, .2);
+			background: var(--card-hover);
+			box-shadow: 0 4px 12px rgba(255, 255, 255, .1);
+		}
+
+		.card-thumb {
+			width: 100%;
+			aspect-ratio: 16/9;
+			position: relative;
+			overflow: hidden;
+			background: linear-gradient(135deg, #1c2128, #0d1117);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.card-thumb-grad {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			inset: 0;
+		}
+
+		.card-initials {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.8rem;
+			font-weight: 800;
+			letter-spacing: -.02em;
+			color: rgba(255, 255, 255, .15);
+			text-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+			user-select: none;
+		}
+
+		.card-info {
+			padding: 8px 10px 10px;
+		}
+
+		.card-name {
+			font-size: 13px;
+			font-weight: 600;
+			color: rgba(255, 255, 255, .95);
+			line-height: 1.3;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.card-fav {
+			position: absolute;
+			top: 6px;
+			right: 6px;
+			background: rgba(0, 0, 0, .6);
+			border: none;
+			cursor: pointer;
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			font-size: 14px;
+			color: rgba(255, 255, 255, .5);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			transition: opacity .15s, color .15s;
+			z-index: 2;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+		}
+
+		.card:hover .card-fav {
+			opacity: 1;
+		}
+
+		.card-faon {
+			opacity: 1;
+			color: #ffd700;
+		}
+
+		.card-fav:hover {
+			color: #ffd700;
+		}
+
+		.card.req {
+			border: 2px dashed rgba(255, 165, 0, .5);
+		}
+
+		.card.req .card-name {
+			color: #ffa500;
+		}
+
+		body.glow-on .card:hover {
+			box-shadow: 0 0 18px rgba(255, 255, 255, .3);
+		}
+
+		body.hover-off .card:hover {
+			transform: none !important;
+		}
+
+		#overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 50;
+			background: #000;
+			flex-direction: column;
+		}
+
+		#overlay.on {
+			display: flex;
+		}
+
+		#gframe {
+			flex: 1;
+			width: 100%;
+			border: none;
+			background: #000;
+		}
+
+		#gload {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			background: #000;
+			z-index: 2;
+		}
+
+		#gload.hide {
+			display: none;
+		}
+
+		.spin {
+			border: 4px solid rgba(255, 255, 255, .2);
+			border-top: 4px solid #fff;
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 1s linear infinite;
+			margin-bottom: 18px;
+		}
+
+		@keyframes spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+
+		#bar-wrap {
+			width: 260px;
+			height: 8px;
+			background: rgba(255, 255, 255, .15);
+			border-radius: 99px;
+			overflow: hidden;
+			margin-top: 14px;
+		}
+
+		#bar {
+			height: 100%;
+			width: 0;
+			background: #fff;
+			border-radius: 99px;
+			box-shadow: 0 0 8px rgba(255, 255, 255, .5);
+		}
+
+		#bar-lbl {
+			margin-top: 10px;
+			font-size: 13px;
+			color: rgba(255, 255, 255, .5);
+		}
+
+		#fs-btn {
+			position: fixed;
+			right: 18px;
+			top: 18px;
+			padding: 8px 14px;
+			border-radius: 8px;
+			border: none;
+			cursor: pointer;
+			z-index: 60;
+			font-weight: 700;
+			background: #fff;
+			color: #000;
+		}
+
+		#bk-btn {
+			position: fixed;
+			left: 18px;
+			top: 18px;
+			padding: 8px 14px;
+			border-radius: 8px;
+			border: none;
+			cursor: pointer;
+			z-index: 60;
+			font-weight: 700;
+			background: rgba(0, 0, 0, .55);
+			color: #fff;
+		}
+
+		#browser-page {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 10;
+			top: var(--top-h);
+		}
+
+		#browser-page.on {
+			display: flex;
+			flex-direction: column;
+		}
+
+		#browser-page iframe {
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 55;
+			inset: 0;
+			background: rgba(0, 0, 0, .75);
+			backdrop-filter: blur(6px);
+		}
+
+		.modal.on {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.modal-box {
+			background: #0d1117;
+			padding: 28px;
+			border-radius: 14px;
+			max-width: 460px;
+			width: 90%;
+			color: var(--text);
+			border: 1px solid rgba(255, 255, 255, .1);
+			max-height: 80vh;
+			overflow-y: auto;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
+		}
+
+		.modal-thumb {
+			width: 100%;
+			aspect-ratio: 16/9;
+			border-radius: 8px;
+			overflow: hidden;
+			margin-bottom: 18px;
+			position: relative;
+			background: linear-gradient(135deg, #1c2128, #0d1117);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.modal-thumb-grad {
+			width: 100%;
+			height: 100%;
+		}
+
+		.modal-thumb-title {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 2.5rem;
+			font-weight: 800;
+			color: rgba(255, 255, 255, .15);
+			letter-spacing: -.02em;
+		}
+
+		.mtrow {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			margin-bottom: 14px;
+		}
+
+		.mtrow h2 {
+			flex: 1;
+			font-size: 1.2rem;
+			color: #fff;
+		}
+
+		.mfav {
+			font-size: 22px;
+			background: none;
+			border: none;
+			cursor: pointer;
+			color: rgba(255, 255, 255, .3);
+			transition: color .2s;
+			padding: 4px;
+		}
+
+		.mfav:hover,
+		.mfaon {
+			color: #ffd700;
+		}
+
+		.mstat {
+			display: flex;
+			justify-content: space-between;
+			padding: 8px 0;
+			border-bottom: 1px solid rgba(255, 255, 255, .1);
+			font-size: 14px;
+		}
+
+		.mstat:last-of-type {
+			border: none;
+		}
+
+		.mstat b {
+			color: rgba(255, 255, 255, .5);
+			font-weight: 600;
+		}
+
+		.mbtns {
+			display: flex;
+			gap: 10px;
+			margin-top: 18px;
+			justify-content: center;
+		}
+
+		.mbtns button {
+			padding: 10px 22px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-weight: 700;
+			font-size: 14px;
+		}
+
+		.mbplay {
+			background: #fff;
+			color: #000;
+		}
+
+		.mbplay:hover {
+			filter: brightness(0.9);
+		}
+
+		.mbclose {
+			background: rgba(255, 255, 255, .1);
+			color: var(--text);
+			border: 1px solid rgba(255, 255, 255, .2);
+		}
+
+		.mbclose:hover {
+			background: rgba(255, 255, 255, .18);
+		}
+
+		/* Settings Drawer - RIGHT SIDE */
+		#settings-drawer {
+			position: fixed;
+			right: -420px;
+			top: 0;
+			bottom: 0;
+			width: 400px;
+			background: #0a0e14;
+			z-index: 100;
+			transition: right .3s;
+			overflow: hidden;
+			border-left: 1px solid rgba(255, 255, 255, .1);
+			box-shadow: -2px 0 30px rgba(0, 0, 0, .5);
+			display: flex;
+			flex-direction: column;
+		}
+
+		#settings-drawer.open {
+			right: 0;
+		}
+
+		.settings-header {
+			padding: 18px 20px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			border-bottom: 1px solid rgba(255, 255, 255, .1);
+			flex-shrink: 0;
+		}
+
+		.settings-header h2 {
+			color: #fff;
+			font-size: 1.2rem;
+		}
+
+		.settings-close-btn {
+			background: none;
+			border: none;
+			color: rgba(255, 255, 255, .4);
+			font-size: 22px;
+			cursor: pointer;
+			padding: 4px;
+			transition: color .2s;
+		}
+
+		.settings-close-btn:hover {
+			color: #fff;
+		}
+
+		.settings-tabs {
+			display: flex;
+			gap: 0;
+			border-bottom: 1px solid rgba(255, 255, 255, .1);
+			padding: 0;
+			flex-shrink: 0;
+		}
+
+		.settings-tab {
+			flex: 1;
+			padding: 12px 10px;
+			border: none;
+			background: rgba(255, 255, 255, .05);
+			color: rgba(255, 255, 255, .5);
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: 600;
+			transition: all .2s;
+			border-bottom: 2px solid transparent;
+		}
+
+		.settings-tab:hover {
+			background: rgba(255, 255, 255, .1);
+		}
+
+		.settings-tab.active {
+			background: rgba(255, 255, 255, .08);
+			color: #fff;
+			border-bottom-color: #fff;
+		}
+
+		.settings-content {
+			flex: 1;
+			overflow-y: auto;
+			scrollbar-width: thin;
+			scrollbar-color: rgba(255, 255, 255, .1) transparent;
+		}
+
+		.settings-panel {
+			display: none;
+			padding: 16px 18px;
+		}
+
+		.settings-panel.active {
+			display: block;
+		}
+
+		.settings-group {
+			margin-bottom: 20px;
+		}
+
+		.settings-group-title {
+			display: block;
+			color: rgba(255, 255, 255, .45);
+			font-weight: 700;
+			font-size: 11px;
+			letter-spacing: .06em;
+			text-transform: uppercase;
+			margin-bottom: 12px;
+		}
+
+		.settings-option {
+			margin-bottom: 14px;
+		}
+
+		.settings-option label {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			cursor: pointer;
+			font-size: 14px;
+			color: rgba(255, 255, 255, .8);
+		}
+
+		.settings-toggle {
+			width: 40px;
+			height: 22px;
+			background: rgba(255, 255, 255, .1);
+			border: none;
+			border-radius: 12px;
+			cursor: pointer;
+			position: relative;
+			transition: background .2s;
+			margin-left: auto;
+			flex-shrink: 0;
+		}
+
+		.settings-toggle::after {
+			content: '';
+			position: absolute;
+			width: 18px;
+			height: 18px;
+			background: #fff;
+			border-radius: 50%;
+			top: 2px;
+			left: 2px;
+			transition: left .2s;
+		}
+
+		.settings-toggle.active {
+			background: rgba(255, 255, 255, .3);
+		}
+
+		.settings-toggle.active::after {
+			left: 20px;
+		}
+
+		.settings-buttons {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.settings-btn {
+			padding: 10px;
+			border: none;
+			border-radius: 8px;
+			background: rgba(255, 255, 255, .1);
+			color: #fff;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 13px;
+			text-align: center;
+			transition: background .2s;
+			border: 1px solid rgba(255, 255, 255, .2);
+		}
+
+		.settings-btn:hover {
+			background: rgba(255, 255, 255, .18);
+		}
+
+		.settings-description {
+			font-size: 12px;
+			color: rgba(255, 255, 255, .35);
+			margin-top: 6px;
+			line-height: 1.4;
+		}
+
+		.bg-grid-options {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+		}
+
+		.bg-option {
+			padding: 12px;
+			border: 2px solid rgba(255, 255, 255, .15);
+			border-radius: 8px;
+			background: rgba(255, 255, 255, .05);
+			color: #fff;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: 600;
+			text-align: center;
+			transition: all .2s;
+		}
+
+		.bg-option:hover {
+			border-color: rgba(255, 255, 255, .3);
+			background: rgba(255, 255, 255, .1);
+		}
+
+		.bg-option.active {
+			border-color: #fff;
+			background: rgba(255, 255, 255, .15);
+		}
+
+		/* Info Modal */
+		#info-modal {
+			display: none;
+			position: fixed;
+			z-index: 105;
+			inset: 0;
+			background: rgba(0, 0, 0, .75);
+			backdrop-filter: blur(6px);
+		}
+
+		#info-modal.on {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.info-box {
+			background: #0d1117;
+			padding: 28px;
+			border-radius: 14px;
+			max-width: 500px;
+			width: 90%;
+			color: #fff;
+			border: 1px solid rgba(255, 255, 255, .1);
+			max-height: 80vh;
+			overflow-y: auto;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
+		}
+
+		.info-box h2 {
+			margin-bottom: 16px;
+			font-size: 1.3rem;
+		}
+
+		.info-textarea {
+			width: 100%;
+			height: 300px;
+			background: rgba(255, 255, 255, .05);
+			border: 1px solid rgba(255, 255, 255, .1);
+			border-radius: 8px;
+			color: #fff;
+			padding: 12px;
+			font-family: 'Courier New', monospace;
+			font-size: 13px;
+			resize: none;
+			margin-bottom: 16px;
+		}
+
+		.info-textarea::placeholder {
+			color: rgba(255, 255, 255, .3);
+		}
+
+		.info-textarea:focus {
+			outline: none;
+			border-color: rgba(255, 255, 255, .3);
+			background: rgba(255, 255, 255, .08);
+		}
+
+		.info-footer {
+			display: flex;
+			gap: 10px;
+			justify-content: center;
+		}
+
+		.info-btn {
+			padding: 10px 20px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 14px;
+			transition: all .2s;
+		}
+
+		.info-btn-primary {
+			background: rgba(255, 255, 255, .2);
+			color: #fff;
+			border: 1px solid rgba(255, 255, 255, .3);
+		}
+
+		.info-btn-primary:hover {
+			background: rgba(255, 255, 255, .3);
+		}
+
+		.info-btn-secondary {
+			background: rgba(255, 255, 255, .05);
+			color: rgba(255, 255, 255, .8);
+			border: 1px solid rgba(255, 255, 255, .1);
+		}
+
+		.info-btn-secondary:hover {
+			background: rgba(255, 255, 255, .1);
+		}
+	</style>
 </head>
+
 <body>
-<div id="topbar">
-  <div id="logo">Math Line</div>
-  <input id="search" type="search" placeholder="Search games..." aria-label="Search">
-  <div id="top-right"><button id="settings-btn" title="Settings">⚙️</button></div>
-</div>
-<div id="main">
-  <div id="content">
-    <div class="section-header">
-      <span class="section-title" id="section-label">All Games</span>
-      <span class="section-count" id="counter"></span>
-    </div>
-    <div id="game-list"></div>
-  </div>
-</div>
+	<div id="topbar">
+		<div id="logo">MathLine</div>
+		<input id="search" type="text" placeholder="Search games..." />
+		<div id="top-right">
+			<button id="info-btn">ℹ️</button>
+			<button id="settings-btn">⚙️</button>
+		</div>
+	</div>
 
-<div id="overlay">
-  <div id="gload">
-    <div class="spin"></div>
-    <p style="color:#fff;font-weight:700;margin:0;">Loading game...</p>
-    <div id="bar-wrap"><div id="bar"></div></div>
-  </div>
-  <iframe id="gframe" title="Game" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-pointer-lock"></iframe>
-</div>
-<button id="fs-btn">⛶ Fullscreen</button>
-<button id="bk-btn">← Back</button>
+	<div id="main">
+		<div id="content">
+			<div class="section-header">
+				<h1 class="section-title">Games</h1>
+				<span class="section-count" id="game-count">0 games</span>
+			</div>
+			<div id="game-list"></div>
+		</div>
+	</div>
 
-<div id="drawer">
-  <div class="dr-head"><h2>⚙️ Settings</h2><button class="dr-close" id="dr-close">✕</button></div>
-  <div class="dr-panel">
-    <div class="sg"><span>Show Favorites Button</span><div class="opts">
-      <div class="opt on" data-showfav="on">On</div><div class="opt" data-showfav="off">Off</div>
-    </div></div>
-  </div>
-</div>
+	<div id="overlay">
+		<div id="gload">
+			<div class="spin"></div>
+			<div id="bar-lbl">Loading...</div>
+			<div id="bar-wrap">
+				<div id="bar"></div>
+			</div>
+		</div>
+		<iframe id="gframe"></iframe>
+		<button id="fs-btn">Exit Fullscreen</button>
+		<button id="bk-btn">Back</button>
+	</div>
 
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <div class="modal-thumb"><div id="m-thumb-grad" style="width:100%;height:100%;"></div><div class="modal-thumb-title" id="m-thumb-title"></div></div>
-    <div class="mtrow"><h2 id="m-name"></h2><button class="mfav" id="m-fav">☆</button></div>
-    <div class="mstat"><b>Times Played</b><span id="m-played"></span></div>
-    <div class="mstat"><b>Last Played</b><span id="m-last"></span></div>
-    <div class="mstat"><b>Play Time</b><span id="m-time"></span></div>
-    <div class="mbtns">
-      <button class="mbplay" id="m-play">▶️ Play</button>
-      <button class="mbclose" id="m-close">Close</button>
-    </div>
-  </div>
-</div>
+	<div class="modal" id="game-modal">
+		<div class="modal-box">
+			<div class="modal-thumb">
+				<div class="modal-thumb-grad"></div>
+				<div class="modal-thumb-title" id="modal-icon">🎮</div>
+			</div>
+			<div class="mtrow">
+				<h2 id="modal-title">Game Name</h2>
+				<button class="mfav" id="modal-fav">☆</button>
+			</div>
+			<div id="modal-stats"></div>
+			<div class="mbtns">
+				<button class="mbplay" id="modal-play">Play Now</button>
+				<button class="mbclose">Close</button>
+			</div>
+		</div>
+	</div>
 
-<div class="popup" id="upd-popup">
-  <div class="popup-box">
-    <h2>🎉 What's New</h2>
-    <p>• Clean, minimalist design<br>• Simple search-based navigation<br>• Dark mode color scheme<br>• Improved performance<br>• Easy favorites management</p>
-    <div class="popup-foot"><button class="pop-btn" id="upd-ok">Got it!</button></div>
-  </div>
-</div>
+	<!-- Settings Drawer - RIGHT SIDE -->
+	<div id="settings-drawer">
+		<div class="settings-header">
+			<h2>Settings</h2>
+			<button class="settings-close-btn">✕</button>
+		</div>
 
-<script>
-(function(){
-'use strict';
-const mem={};
-const ls=(()=>{try{localStorage.setItem('_','1');localStorage.removeItem('_');return localStorage;}catch(e){return{getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=String(v);},removeItem:k=>{delete mem[k];}}}})();
-const get=k=>ls.getItem('ml_'+k);
-const set=(k,v)=>ls.setItem('ml_'+k,String(v));
-const getStats=n=>{try{return JSON.parse(ls.getItem('mls_'+n)||'{"p":0,"d":"Never","t":0}');}catch(e){return{p:0,d:'Never',t:0};}};
-const saveStats=(n,s)=>ls.setItem('mls_'+n,JSON.stringify(s));
-const addTime=(n,sec)=>{const s=getStats(n);s.t=(s.t||0)+(sec/60);saveStats(n,s);};
-const getFavs=()=>{try{return JSON.parse(ls.getItem('ml_favs')||'[]');}catch(e){return[];}};
-const setFavs=a=>ls.setItem('ml_favs',JSON.stringify(a));
-const toggleFav=n=>{let f=getFavs();f.includes(n)?f=f.filter(x=>x!==n):f.push(n);setFavs(f);return f.includes(n);};
-const isFav=n=>getFavs().includes(n);
-const fmtTime=m=>{const v=parseFloat((m||0).toFixed(1));return v>=60?`${Math.floor(v/60)}h ${Math.round(v%60)}m`:`${v}m`;};
-function gradForName(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return `hsl(${h%360},60%,30%)`;}
-function initialsFor(name){return name.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
-const $=id=>document.getElementById(id);
-const gameList=$('game-list'),counter=$('counter'),sectionLabel=$('section-label'),search=$('search'),overlay=$('overlay'),gframe=$('gframe'),gload=$('gload'),bar=$('bar'),fsBtn=$('fs-btn'),bkBtn=$('bk-btn'),settingsBtn=$('settings-btn'),drawer=$('drawer'),modal=$('modal'),mName=$('m-name'),mPlayed=$('m-played'),mLast=$('m-last'),mTime=$('m-time'),mPlay=$('m-play'),mClose=$('m-close'),mFav=$('m-fav');
+		<div class="settings-tabs">
+			<button class="settings-tab active" data-tab="appearance">Appearance</button>
+			<button class="settings-tab" data-tab="background">Background</button>
+			<button class="settings-tab" data-tab="gameplay">Gameplay</button>
+			<button class="settings-tab" data-tab="advanced">Advanced</button>
+		</div>
 
-// GAMES LIST (all 100+ games)
-const _G=[{n:'10 Minutes Till Dawn',u:'10min.html'},{n:'1v1 Lol',u:'1v1-lol.html'},{n:'A Small World Cup',u:'A-small-world-cup.html'},{n:'Age Of War',u:'Age-of-war.html'},{n:'Bad Ice Cream 3',u:'BI3.html'},{n:'Ballz',u:'Ballz.html'},{n:'Basket Random',u:'Basket-random.html'},{n:'Basketball Stars',u:'Basketball-stars.html'},{n:'Binding of Isaac',u:'Binding-of-issac.html'},{n:'BitLife',u:'Bit-life.html'},{n:'Bit Planes',u:'Bit-planes.html'},{n:'Block Blast',u:'Block-blast.html'},{n:'Bob The Robber 5',u:'bob-robber.html'},{n:'Brotato',u:'BroT.html'},{n:'BTD5',u:'BTD5.html'},{n:'Burrito Bison',u:'BB.html'},{n:'Burrito Bison Launcha Libre',u:'BL.html'},{n:'Burrito Bison Revenge',u:'BR.html'},{n:'Capybara Clicker',u:'Cappybara-clicker.html'},{n:'Car Crash 3D',u:'Car-crash-3d.html'},{n:'Choppy Orc',u:'ChoppyO.html'},{n:'Cluster Rush',u:'Cluster-rush.html'},{n:'Crazy Cattle',u:'Crazy-cattle.html'},{n:'Crossy Road',u:'Crossy-road.html'},{n:'CSGO Clicker',u:'CsGo-clicker.html'},{n:'Doge Miner',u:'Doge-miner.html'},{n:'Draw Climber',u:'Draw-climber.html'},{n:'Drift Boss',u:'Drift-boss.html'},{n:'Drive Mad',u:'Drive-mad.html'},{n:'Duck Life 4',u:'Duck-life-4.html'},{n:'Duck Life 5',u:'Duck-life-5.html'},{n:'Dungeons & Degenerate Gamblers',u:'DaDG.html'},{n:'Eggy Car',u:'eggy.html'},{n:'Escape Road',u:'Escape-road.html'},{n:'Factory Balls 2',u:'Factory-balls2.html'},{n:'Factory Balls 3',u:'Factory-balls3.html'},{n:'Final Earth 2',u:'Final-earth2.html'},{n:'Geometry Dash Lite',u:'Geometry-Dash.html'},{n:'Gladi Hoppers',u:'Gladi-hoppers.html'},{n:'Granny 2',u:'Granny2.html'},{n:'Granny 3',u:'Granny3.html'},{n:'Gun Spin',u:'Gun-spin.html'},{n:'Happy Wheels',u:'Happy-wheels.html'},{n:'Hardware Tycoon',u:'Hardware-tycoon.html'},{n:'Hole.io',u:'Hole-io.html'},{n:'House of Hazards',u:'house-of-hazards.html'},{n:'Idle Breakout',u:'Idle-breakout.html'},{n:'Idle Miner Tycoon',u:'Idle-miner-tycoon.html'},{n:'Indian Truck Simulator',u:'Indian-truck-simulator.html'},{n:'Infinite Craft',u:'Infinte-craft.html'},{n:'Jack Smith',u:'Jack-smith.html'},{n:'Jet Rush',u:'jet.html'},{n:'Jetpack Joy Ride',u:'Jetpack-joy-ride.html'},{n:'Learn To Fly 3',u:'Learn-to-fly-3.html'},{n:'Line Rider',u:'Line-rider.html'},{n:'Malidin Stun Cars',u:'Malidin-stun-cars.html'},{n:'Melon Playground',u:'Melon-playground.html'},{n:'Minecraft',u:'EaglerCraft 1.12 [wasm].html'},{n:'Mob Control',u:'Mob-control.html'},{n:'Moto X3M 2',u:'Moto-x3m-2.html'},{n:'Moto X3M Pool Party',u:'motobp.html'},{n:'Moto X3M Spooky Land',u:'motosp.html'},{n:'Moto X3M Winter',u:'Moto-x3m-winter.html'},{n:'Mr. Mine',u:'miner.html'},{n:'Papa\'s Freezeria',u:'Pf.html'},{n:'Papa\'s Pastaria',u:'Pp.html'},{n:'Papa\'s Sushiria',u:'Ps.html'},{n:'Pixel Battleground',u:'pg.html'},{n:'Plants vs Zombies',u:'Plants-vs-zombies.html'},{n:'Pokemon Emerald Randomized',u:'PER.html'},{n:'Poly Track',u:'Poly-track.html'},{n:'Push Your Luck',u:'Push-your-luck.html'},{n:'QWOP',u:'QWOP.html'},{n:'Ragdoll Archers',u:'Ragdoll-Archers.html'},{n:'Ragdoll Hit',u:'Ragdoll-hit.html'},{n:'Ragdoll Soccer',u:'Ragdoll-soccer.html'},{n:'Retro Bowl',u:'Retro-bowl.html'},{n:'Rocket League',u:'goal.html'},{n:'Rooftop Snipers',u:'RF.html'},{n:'Shred Sauce',u:'ShredS.html'},{n:'Slope 3',u:'Slope-3.html'},{n:'Snow Rider',u:'Snow-Rider.html'},{n:'Space Waves',u:'Space-waves.html'},{n:'Stick Man Hook',u:'Stick-man-hook.html'},{n:'Subway Surfers Iceland',u:'Subway-iceland.html'},{n:'Subway Surfers London',u:'Subway-london.html'},{n:'Subway Surfers Mexico',u:'Subway-mexico.html'},{n:'Subway Surfers Miami',u:'Subway-miami.html'},{n:'Subway Surfers Winter',u:'Subway-Winter.html'},{n:'Swords And Sandals',u:'Swords-and-sandlas.html'},{n:'Tag',u:'tag.html'},{n:'Tall Man Run',u:'tall-man-run.html'},{n:'Time Shooter',u:'Time-shooter.html'},{n:'Tiny Fishing',u:'Tiny-fishing.html'},{n:'Traffic Jam 3D',u:'Tj.html'},{n:'Troll Face Quest 10',u:'Troll-face-10.html'},{n:'Troll Face Quest 11',u:'Troll-face-11.html'},{n:'Troll Face Quest 12',u:'Troll-face-12.html'},{n:'Tunnel Rush',u:'Tunnel-rush.html'},{n:'Ultimate Car Simulator',u:'Ucarsim.html'},{n:'Ultimate Car Simulator 3',u:'ultimate-car-simulator.html'},{n:'Unicycle Hero',u:'Unicycle-hero.html'},{n:'Vex 8',u:'Vex-8.html'},{n:'Wordle',u:'Wordle.html'},{n:'Zelda Ocarina',u:'Zelda0.html'}];
-const ALL=[..._G].sort((a,b)=>a.n.localeCompare(b.n));
-const URL_MAP=new Map(ALL.map(x=>[x.u,x.n]));
+		<div class="settings-content">
+			<!-- Appearance Tab -->
+			<div class="settings-panel active" data-panel="appearance">
+				<div class="settings-group">
+					<span class="settings-group-title">Theme</span>
+					<div class="settings-option">
+						<label>
+							<span>Dark Only (No Light Mode)</span>
+						</label>
+						<div class="settings-description">This app features dark theme optimized design</div>
+					</div>
+				</div>
 
-let activeSearch='',curModal=null,gameStart=null;
-let showFav=get('showfav')!=='off';
+				<div class="settings-group">
+					<span class="settings-group-title">Visual Effects</span>
+					<div class="settings-option">
+						<label>
+							<span>Card Animations</span>
+							<button class="settings-toggle active" id="animation-toggle"></button>
+						</label>
+						<div class="settings-description">Enable smooth card hover transitions</div>
+					</div>
+					<div class="settings-option">
+						<label>
+							<span>Glow Effects</span>
+							<button class="settings-toggle" id="glow-toggle"></button>
+						</label>
+						<div class="settings-description">Add glow effect to cards on hover</div>
+					</div>
+				</div>
 
-renderGames();
+				<div class="settings-group">
+					<span class="settings-group-title">Interface</span>
+					<div class="settings-option">
+						<label>
+							<span>Text Shadows</span>
+							<button class="settings-toggle active" id="shadow-toggle"></button>
+						</label>
+						<div class="settings-description">Add shadows to text elements</div>
+					</div>
+				</div>
+			</div>
 
-function makeCard(g,favs){
-  const fav=favs.includes(g.n);const s=getStats(g.n);
-  const card=document.createElement('div');card.className='card';card.dataset.n=g.n;
-  const thumb=document.createElement('div');thumb.className='card-thumb';
-  const grad=document.createElement('div');grad.className='card-thumb-grad';grad.style.background=gradForName(g.n);
-  const init=document.createElement('div');init.className='card-initials';init.textContent=initialsFor(g.n);
-  thumb.appendChild(grad);thumb.appendChild(init);
-  const favBtn=document.createElement('button');favBtn.className='card-fav'+(fav&&showFav?' on':'');favBtn.textContent=fav?'★':'☆';
-  if(showFav)favBtn.style.display='block';else favBtn.style.display='none';
-  favBtn.onclick=e=>{e.stopPropagation();const now=toggleFav(g.n);favBtn.textContent=now?'★':'☆';favBtn.classList.toggle('on',now);renderGames();};
-  thumb.appendChild(favBtn);
-  const info=document.createElement('div');info.className='card-info';
-  const name=document.createElement('div');name.className='card-name';name.textContent=g.n;
-  info.appendChild(name);card.appendChild(thumb);card.appendChild(info);card.onclick=()=>openModal(g.n);return card;
-}
+			<!-- Background Tab -->
+			<div class="settings-panel" data-panel="background">
+				<div class="settings-group">
+					<span class="settings-group-title">Background Effects</span>
+					<div class="bg-grid-options">
+						<button class="bg-option active" data-bg="stars">Stars</button>
+						<button class="bg-option" data-bg="rain">Rain</button>
+						<button class="bg-option" data-bg="grid">Grid</button>
+						<button class="bg-option" data-bg="dots">Dots</button>
+						<button class="bg-option" data-bg="lines">Lines</button>
+						<button class="bg-option" data-bg="waves">Waves</button>
+						<button class="bg-option" data-bg="nebula">Nebula</button>
+						<button class="bg-option" data-bg="none">None</button>
+					</div>
+					<div class="settings-description">Choose your preferred background effect</div>
+				</div>
 
-function renderGames(){
-  if(!ALL.length)return;
-  const favs=getFavs();let list=ALL;
-  if(activeSearch){const q=activeSearch.toLowerCase();list=list.filter(g=>g.n.toLowerCase().includes(q));}
-  sectionLabel.textContent=activeSearch?`Search: "${activeSearch}"`:sectionLabel.textContent='All Games';
-  counter.textContent=`${list.length} game${list.length!==1?'s':''}`;
-  const frag=document.createDocumentFragment();
-  for(const g of list)frag.appendChild(makeCard(g,favs));
-  gameList.replaceChildren(frag);
-}
+				<div class="settings-group">
+					<span class="settings-group-title">Background Settings</span>
+					<div class="settings-option">
+						<label>
+							<span>Animation Speed</span>
+							<input type="range" min="1" max="10" value="5" id="bg-speed" style="width: 60px; margin-left: auto;">
+						</label>
+						<div class="settings-description">Adjust background animation speed</div>
+					</div>
+				</div>
+			</div>
 
-let searchTimer;
-search.addEventListener('input',e=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{activeSearch=e.target.value;renderGames();},150);});
+			<!-- Gameplay Tab -->
+			<div class="settings-panel" data-panel="gameplay">
+				<div class="settings-group">
+					<span class="settings-group-title">Game Settings</span>
+					<div class="settings-option">
+						<label>
+							<span>Auto-Load Games</span>
+							<button class="settings-toggle active" id="autoload-toggle"></button>
+						</label>
+						<div class="settings-description">Automatically load games when selected</div>
+					</div>
+					<div class="settings-option">
+						<label>
+							<span>Sound Effects</span>
+							<button class="settings-toggle" id="sound-toggle"></button>
+						</label>
+						<div class="settings-description">Play sounds when interacting</div>
+					</div>
+					<div class="settings-option">
+						<label>
+							<span>Show Play Count</span>
+							<button class="settings-toggle" id="playcount-toggle"></button>
+						</label>
+						<div class="settings-description">Display how many times games are played</div>
+					</div>
+				</div>
 
-function openModal(name){
-  const g=ALL.find(x=>x.n===name);if(!g)return;
-  curModal=name;const s=getStats(name);
-  mName.textContent=name;mPlayed.textContent=s.p||0;mLast.textContent=s.d||'Never';mTime.textContent=fmtTime(s.t||0);
-  mPlay.onclick=()=>launchGame(name);
-  const fav=isFav(name);mFav.textContent=fav?'★':'☆';mFav.classList.toggle('on',fav);
-  $('m-thumb-grad').style.background=gradForName(name);$('m-thumb-title').textContent=initialsFor(name);
-  drawer.classList.remove('on');modal.classList.add('on');
-}
-function closeModal(){modal.classList.remove('on');curModal=null;}
-mClose.onclick=closeModal;modal.onclick=e=>{if(e.target===modal)closeModal();};
-mFav.onclick=()=>{if(!curModal)return;const now=toggleFav(curModal);mFav.textContent=now?'★':'☆';mFav.classList.toggle('on',now);renderGames();};
+				<div class="settings-group">
+					<span class="settings-group-title">Favorites</span>
+					<div class="settings-buttons">
+						<button class="settings-btn" id="clear-favorites">Clear All Favorites</button>
+					</div>
+					<div class="settings-description">Remove all saved favorite games</div>
+				</div>
+			</div>
 
-function launchGame(name){
-  const g=ALL.find(x=>x.n===name);if(!g)return;
-  const s=getStats(name);s.p=(s.p||0)+1;s.d=new Date().toLocaleDateString();saveStats(name,s);
-  closeModal();drawer.classList.remove('on');settingsBtn.classList.add('hide');
-  overlay.classList.add('on');gload.classList.remove('hide');fsBtn.style.display='block';bkBtn.style.display='block';
-  bar.style.width='0';
-  const T=3000,t0=performance.now();let barDone=false,ifrDone=false;
-  function tick(now){const raw=Math.min((now-t0)/T,1);const pct=Math.round((1-Math.pow(1-raw,2))*100);bar.style.width=pct+'%';if(raw<1)requestAnimationFrame(tick);else barDone=true;if(barDone&&ifrDone)gload.classList.add('hide');}
-  requestAnimationFrame(tick);gameStart=Date.now();gframe.src=g.u;
-  gframe.onload=()=>{ifrDone=true;if(barDone)gload.classList.add('hide');};
-}
+			<!-- Advanced Tab -->
+			<div class="settings-panel" data-panel="advanced">
+				<div class="settings-group">
+					<span class="settings-group-title">Performance</span>
+					<div class="settings-option">
+						<label>
+							<span>Card Hover Effect</span>
+							<button class="settings-toggle active" id="hover-effect"></button>
+						</label>
+						<div class="settings-description">Enable 3D transform on card hover</div>
+					</div>
+					<div class="settings-option">
+						<label>
+							<span>Smooth Scrolling</span>
+							<button class="settings-toggle active" id="smooth-scroll"></button>
+						</label>
+						<div class="settings-description">Enable smooth scroll behavior</div>
+					</div>
+				</div>
 
-function closeGame(){
-  if(gameStart){const cu=gframe.src.split('/').pop();const gn=URL_MAP.get(decodeURIComponent(cu));if(gn)addTime(gn,Math.floor((Date.now()-gameStart)/1000));gameStart=null;}
-  gframe.onload=null;gframe.src='';overlay.classList.remove('on');gload.classList.remove('hide');bar.style.width='0';fsBtn.style.display='none';bkBtn.style.display='none';settingsBtn.classList.remove('hide');
-}
-bkBtn.onclick=closeGame;
-fsBtn.onclick=()=>{if(gframe.requestFullscreen)gframe.requestFullscreen();};
+				<div class="settings-group">
+					<span class="settings-group-title">Card Display</span>
+					<div class="settings-option">
+						<label>
+							<span>Grid Size</span>
+							<select id="grid-size" style="margin-left: auto; padding: 5px 8px; background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.2); border-radius: 4px;">
+								<option value="140">Small</option>
+								<option value="160" selected>Normal</option>
+								<option value="180">Large</option>
+								<option value="200">Extra Large</option>
+							</select>
+						</label>
+						<div class="settings-description">Adjust game card size in grid</div>
+					</div>
+				</div>
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if(overlay.classList.contains('on'))closeGame();else if(drawer.classList.contains('on'))drawer.classList.remove('on');else if(modal.classList.contains('on'))closeModal();}
-  if((e.key==='f'||e.key==='F')&&overlay.classList.contains('on')){e.preventDefault();fsBtn.click();}
-});
+				<div class="settings-group">
+					<span class="settings-group-title">Memory & Cache</span>
+					<div class="settings-buttons">
+						<button class="settings-btn" id="clear-cache">Clear Cache</button>
+						<button class="settings-btn" id="reset-settings">Reset All Settings</button>
+					</div>
+					<div class="settings-description">Clear stored data and reset to defaults</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-settingsBtn.onclick=e=>{e.stopPropagation();drawer.classList.toggle('on');};
-$('dr-close').onclick=()=>drawer.classList.remove('on');
-document.addEventListener('click',e=>{if(!e.target.closest('#drawer')&&!e.target.closest('#settings-btn'))drawer.classList.remove('on');});
+	<!-- Info Modal -->
+	<div id="info-modal">
+		<div class="info-box">
+			<h2>Notes & Information</h2>
+			<textarea class="info-textarea" id="info-textarea" placeholder="Write or paste any information here. Your notes will be saved locally."></textarea>
+			<div class="info-footer">
+				<button class="info-btn info-btn-primary" id="save-info">Save</button>
+				<button class="info-btn info-btn-secondary" id="close-info">Close</button>
+			</div>
+		</div>
+	</div>
 
-document.querySelectorAll('[data-showfav]').forEach(o=>{
-  o.onclick=()=>{document.querySelectorAll('[data-showfav]').forEach(x=>x.classList.remove('on'));o.classList.add('on');showFav=o.getAttribute('data-showfav')==='on';set('showfav',showFav?'on':'off');renderGames();};
-});
+	<script>
+		const GAMES=[
+		  {n:'Ragdoll Archers',u:'Ragdoll-Archers.html',c:'Action'},
+		  {n:'Ragdoll Hit',u:'Ragdoll-hit.html',c:'Action'},
+		  {n:'Time Shooter',u:'Time-shooter.html',c:'Action'},
+		  {n:'Retro Bowl',u:'Retro-bowl.html',c:'Arcade'},
+		  {n:'Snow Rider',u:'Snow-Rider.html',c:'Racing'},
+		  {n:'Swords And Sandals',u:'Swords-and-sandlas.html',c:'Action'},
+		  {n:'Crazy Cattle',u:'Crazy-cattle.html',c:'Arcade'},
+		  {n:'Gladi Hoppers',u:'Gladi-hoppers.html',c:'Action'},
+		  {n:'Bit Planes',u:'Bit-planes.html',c:'Arcade'},
+		  {n:'Final Earth 2',u:'Final-earth2.html',c:'Strategy'},
+		  {n:'Cluster Rush',u:'Cluster-rush.html',c:'Arcade'},
+		  {n:'Push Your Luck',u:'Push-your-luck.html',c:'Arcade'},
+		  {n:'Poly Track',u:'Poly-track.html',c:'Racing'},
+		  {n:'Ragdoll Soccer',u:'Ragdoll-soccer.html',c:'2 Player'},
+		  {n:'Jetpack Joy Ride',u:'Jetpack-joy-ride.html',c:'Action'},
+		  {n:'Learn To Fly 3',u:'Learn-to-fly-3.html',c:'Racing'},
+		  {n:'Malidin Stun Cars',u:'Malidin-stun-cars.html',c:'Racing'},
+		  {n:'Gun Spin',u:'Gun-spin.html',c:'Action'},
+		  {n:'Age Of War',u:'Age-of-war.html',c:'Strategy'},
+		  {n:'Moto X3M 2',u:'Moto-x3m-2.html',c:'Racing'},
+		  {n:'Moto X3M Winter',u:'Moto-x3m-winter.html',c:'Racing'},
+		  {n:'Basketball Stars',u:'Basketball-stars.html',c:'2 Player'},
+		  {n:'Idle Breakout',u:'Idle-breakout.html',c:'Arcade'},
+		  {n:'Vex 8',u:'Vex-8.html',c:'Action'},
+		  {n:'Tiny Fishing',u:'Tiny-fishing.html',c:'Simulation'},
+		  {n:'Drive Mad',u:'Drive-mad.html',c:'Racing'},
+		  {n:'Stick Man Hook',u:'Stick-man-hook.html',c:'Action'},
+		  {n:'Line Rider',u:'Line-rider.html',c:'Racing'},
+		  {n:'Unicycle Hero',u:'Unicycle-hero.html',c:'Action'},
+		  {n:'Basket Random',u:'Basket-random.html',c:'2 Player'},
+		  {n:'1v1 Lol',u:'1v1-lol.html',c:'2 Player'},
+		  {n:'Happy Wheels',u:'Happy-wheels.html',c:'Action'},
+		  {n:'Idle Miner Tycoon',u:'Idle-miner-tycoon.html',c:'Simulation'},
+		  {n:'Jack Smith',u:'Jack-smith.html',c:'Action'},
+		  {n:'Tunnel Rush',u:'Tunnel-rush.html',c:'Racing'},
+		  {n:'Duck Life 5',u:'Duck-life-5.html',c:'Simulation'},
+		  {n:'Duck Life 4',u:'Duck-life-4.html',c:'Simulation'},
+		  {n:'Mob Control',u:'Mob-control.html',c:'Action'},
+		  {n:'A Small World Cup',u:'A-small-world-cup.html',c:'2 Player'},
+		  {n:'Escape Road',u:'Escape-road.html',c:'Racing'},
+		  {n:'QWOP',u:'QWOP.html',c:'Simulation'},
+		  {n:'Indian Truck Simulator',u:'Indian-truck-simulator.html',c:'Simulation'},
+		  {n:'Doge Miner',u:'Doge-miner.html',c:'Simulation'},
+		  {n:'Draw Climber',u:'Draw-climber.html',c:'Racing'},
+		  {n:'Slope 3',u:'Slope-3.html',c:'Racing'},
+		  {n:'Infinite Craft',u:'Infinte-craft.html',c:'Simulation'},
+		  {n:'Block Blast',u:'Block-blast.html',c:'Arcade'},
+		  {n:'Melon Playground',u:'Melon-playground.html',c:'Simulation'},
+		  {n:'House of Hazards',u:'house-of-hazards.html',c:'2 Player'},
+		  {n:'Binding of Isaac',u:'Binding-of-issac.html',c:'Action'},
+		  {n:'Troll Face Quest 10',u:'Troll-face-10.html',c:'Puzzle'},
+		  {n:'Troll Face Quest 11',u:'Troll-face-11.html',c:'Puzzle'},
+		  {n:'Troll Face Quest 12',u:'Troll-face-12.html',c:'Puzzle'},
+		  {n:'Ultimate Car Simulator 3',u:'ultimate-car-simulator.html',c:'Racing'},
+		  {n:'Wordle',u:'Wordle.html',c:'Puzzle'},
+		  {n:'Capybara Clicker',u:'Cappybara-clicker.html',c:'Simulation'},
+		  {n:'Bob The Robber 5',u:'bob-robber.html',c:'Action'},
+		  {n:'Car Crash 3D',u:'Car-crash-3d.html',c:'Racing'},
+		  {n:'BitLife',u:'Bit-life.html',c:'Simulation'},
+		  {n:'Plants vs Zombies',u:'Plants-vs-zombies.html',c:'Action'},
+		  {n:'Tall Man Run',u:'tall-man-run.html',c:'Racing'},
+		  {n:'Tag',u:'tag.html',c:'2 Player'},
+		  {n:'Subway Surfers Winter',u:'Subway-Winter.html',c:'Racing'},
+		  {n:'Subway Surfers Miami',u:'Subway-miami.html',c:'Racing'},
+		  {n:'Hole.io',u:'Hole-io.html',c:'Simulation'},
+		  {n:'Drift Boss',u:'Drift-boss.html',c:'Racing'},
+		  {n:'Subway Surfers Mexico',u:'Subway-mexico.html',c:'Racing'},
+		  {n:'Subway Surfers London',u:'Subway-london.html',c:'Racing'},
+		  {n:'Subway Surfers Iceland',u:'Subway-iceland.html',c:'Racing'},
+		  {n:'Granny 2',u:'Granny2.html',c:'Puzzle'},
+		  {n:'Granny 3',u:'Granny3.html',c:'Puzzle'},
+		  {n:'Factory Balls 2',u:'Factory-balls2.html',c:'Simulation'},
+		  {n:'Factory Balls 3',u:'Factory-balls3.html',c:'Simulation'},
+		  {n:'Geometry Dash Lite',u:'Geometry-Dash.html',c:'Racing'},
+		  {n:'Hardware Tycoon',u:'Hardware-tycoon.html',c:'Arcade'},
+		  {n:'CSGO Clicker',u:'CsGo-clicker.html',c:'Arcade'},
+		  {n:'Crossy Road',u:'Crossy-road.html',c:'Arcade'},
+		  {n:'Burrito Bison',u:'BB.html',c:'Arcade'},
+		  {n:'Burrito Bison Launcha Libre',u:'BL.html',c:'Arcade'},
+		  {n:'Burrito Bison Revenge',u:'BR.html',c:'Arcade'},
+		  {n:'Space Waves',u:'Space-waves.html',c:'Arcade'},
+		  {n:'Zelda Ocarina',u:'Zelda0.html',c:'Arcade'},
+		  {n:'Pokemon Emerald Randomized',u:'PER.html',c:'Arcade'},
+		  {n:'Rooftop Snipers',u:'RF.html',c:'2 Player'},
+		  {n:'Ultimate Car Simulator',u:'Ucarsim.html',c:'Racing'},
+		  {n:'Traffic Jam 3D',u:'Tj.html',c:'Arcade'},
+		  {n:"Papa's Freezeria",u:'Pf.html',c:'Simulation'},
+		  {n:"Papa's Pastaria",u:'Pp.html',c:'Simulation'},
+		  {n:"Papa's Sushiria",u:'Ps.html',c:'Simulation'},
+		  {n:'Ballz',u:'Ballz.html',c:'Arcade'},
+		  {n:'10 Minutes Till Dawn',u:'10min.html',c:'Arcade'},
+		  {n:'Minecraft',u:'EaglerCraft 1.12 [wasm].html',c:'Arcade'},
+		  {n:'Rocket League',u:'goal.html',c:'Arcade'},
+		  {n:'Pixel Battleground',u:'pg.html',c:'Arcade'},
+		  {n:'BTD5',u:'BTD5.html',c:'Arcade'},
+		  {n:'Brotato',u:'BroT.html',c:'Arcade'},
+		  {n:'Dungeons & Degenerate Gamblers',u:'DaDG.html',c:'Arcade'},
+		  {n:'Eggy Car',u:'Eggy-car.html',c:'Puzzle'},
+		  {n:'Mr. Mine',u:'miner.html',c:'Arcade'},
+		  {n:'Jet Rush',u:'jet.html',c:'Racing'},
+		  {n:'Moto X3M Spooky Land',u:'motosp.html',c:'Racing'},
+		  {n:'Moto X3M Pool Party',u:'motobp.html',c:'Racing'},
+		  {n:'Shred Sauce',u:'ShredS.html',c:'Racing'},
+		  {n:'Choppy Orc',u:'ChoppyO.html',c:'Arcade'},
+		  {n:'Bad Ice Cream 3',u:'BI3.html',c:'Arcade'},
+		];
 
-const VER='2.0';
-if(ls.getItem('ml_v')!==VER){$('upd-popup').classList.add('on');}
-$('upd-ok').onclick=()=>{ls.setItem('ml_v',VER);$('upd-popup').classList.remove('on');};
+		let favorites = new Set(JSON.parse(localStorage.getItem('favorites') || '[]'));
+		let allGames = [...GAMES];
+		let settings = {
+			animations: localStorage.getItem('animations') !== 'false',
+			glow: localStorage.getItem('glow') === 'true',
+			shadow: localStorage.getItem('shadow') !== 'false',
+			autoload: localStorage.getItem('autoload') !== 'false',
+			sound: localStorage.getItem('sound') === 'true',
+			bgEffect: localStorage.getItem('bgEffect') || 'stars',
+			bgSpeed: localStorage.getItem('bgSpeed') || '5',
+			hoverEffect: localStorage.getItem('hoverEffect') !== 'false',
+			smoothScroll: localStorage.getItem('smoothScroll') !== 'false',
+			gridSize: localStorage.getItem('gridSize') || '160',
+			playcount: localStorage.getItem('playcount') === 'true'
+		};
 
-})();
-</script>
+		// Load settings
+		function loadSettings() {
+			if (!settings.animations) {
+				document.body.classList.add('hover-off');
+			}
+			if (settings.glow) {
+				document.body.classList.add('glow-on');
+			}
+			if (!settings.hoverEffect) {
+				document.body.classList.add('hover-off');
+			}
+			document.body.classList.add('bg-' + settings.bgEffect);
+			document.getElementById('grid-size').value = settings.gridSize;
+			updateGridSize();
+		}
+
+		function updateGridSize() {
+			const size = settings.gridSize;
+			const gameList = document.getElementById('game-list');
+			gameList.style.gridTemplateColumns = `repeat(auto-fill, minmax(${size}px, 1fr))`;
+		}
+
+		function getSortedGames(gameList = allGames) {
+			return gameList.sort((a, b) => {
+				const aIsFav = favorites.has(a.n);
+				const bIsFav = favorites.has(b.n);
+				if (aIsFav && !bIsFav) return -1;
+				if (!aIsFav && bIsFav) return 1;
+				return 0;
+			});
+		}
+
+		function renderGames(gameList = allGames, searchQuery = '') {
+			const sortedGames = getSortedGames(gameList);
+			const container = document.getElementById('game-list');
+			container.innerHTML = '';
+
+			if (searchQuery.trim().length > 0) {
+				const reqCard = document.createElement('div');
+				reqCard.className = 'card req';
+				reqCard.innerHTML = `
+					<div class="card-thumb">
+						<div class="card-thumb-grad"></div>
+						<div class="card-initials">❓</div>
+					</div>
+					<div class="card-info">
+						<div class="card-name">Request a Game</div>
+					</div>
+				`;
+				reqCard.onclick = () => {
+					alert(`Game request for "${searchQuery}" has been noted!`);
+				};
+				container.appendChild(reqCard);
+			}
+
+			sortedGames.forEach(game => {
+				const card = document.createElement('div');
+				card.className = 'card';
+				const isFav = favorites.has(game.n);
+				
+				card.innerHTML = `
+					<div class="card-thumb">
+						<div class="card-thumb-grad"></div>
+						<div class="card-initials">${game.n.charAt(0)}</div>
+						<button class="card-fav ${isFav ? 'card-faon' : ''}">★</button>
+					</div>
+					<div class="card-info">
+						<div class="card-name">${game.n}</div>
+					</div>
+				`;
+
+				card.onclick = () => showGameModal(game);
+				const favBtn = card.querySelector('.card-fav');
+				favBtn.onclick = (e) => {
+					e.stopPropagation();
+					toggleFavorite(game.n, favBtn);
+				};
+
+				container.appendChild(card);
+			});
+
+			document.getElementById('game-count').textContent = `${sortedGames.length} games`;
+		}
+
+		function showGameModal(game) {
+			const modal = document.getElementById('game-modal');
+			document.getElementById('modal-title').textContent = game.n;
+			document.getElementById('modal-icon').textContent = game.n.charAt(0);
+			
+			const isFav = favorites.has(game.n);
+			const favBtn = document.getElementById('modal-fav');
+			favBtn.textContent = isFav ? '★' : '☆';
+			if (isFav) {
+				favBtn.classList.add('mfaon');
+			} else {
+				favBtn.classList.remove('mfaon');
+			}
+
+			const stats = `
+				<div class="mstat"><span>Category:</span><b>${game.c}</b></div>
+			`;
+			document.getElementById('modal-stats').innerHTML = stats;
+
+			const playBtn = document.getElementById('modal-play');
+			playBtn.onclick = () => playGame(game);
+
+			const modalFav = document.getElementById('modal-fav');
+			modalFav.onclick = (e) => {
+				e.stopPropagation();
+				toggleFavorite(game.n, modalFav);
+			};
+
+			modal.classList.add('on');
+		}
+
+		function closeGameModal() {
+			document.getElementById('game-modal').classList.remove('on');
+		}
+
+		function playGame(game) {
+			closeGameModal();
+			if (settings.autoload) {
+				const overlay = document.getElementById('overlay');
+				overlay.classList.add('on');
+				document.getElementById('gframe').src = game.u;
+
+				setTimeout(() => {
+					document.getElementById('gload').classList.add('hide');
+				}, 2000);
+			}
+		}
+
+		function toggleFavorite(gameName, button) {
+			if (favorites.has(gameName)) {
+				favorites.delete(gameName);
+				button.classList.remove('card-faon', 'mfaon');
+				button.textContent = '☆';
+			} else {
+				favorites.add(gameName);
+				button.classList.add('card-faon', 'mfaon');
+				button.textContent = '★';
+			}
+			localStorage.setItem('favorites', JSON.stringify([...favorites]));
+			renderGames();
+		}
+
+		// Settings Drawer
+		const settingsBtn = document.getElementById('settings-btn');
+		const settingsDrawer = document.getElementById('settings-drawer');
+		const settingsCloseBtn = document.querySelector('.settings-close-btn');
+
+		settingsBtn.onclick = () => {
+			settingsDrawer.classList.add('open');
+		};
+
+		settingsCloseBtn.onclick = () => {
+			settingsDrawer.classList.remove('open');
+		};
+
+		// Settings Tabs
+		const settingsTabs = document.querySelectorAll('.settings-tab');
+		const settingsPanels = document.querySelectorAll('.settings-panel');
+
+		settingsTabs.forEach(tab => {
+			tab.onclick = () => {
+				settingsTabs.forEach(t => t.classList.remove('active'));
+				settingsPanels.forEach(p => p.classList.remove('active'));
+				tab.classList.add('active');
+				document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+			};
+		});
+
+		// Animation Toggle
+		document.getElementById('animation-toggle').onclick = function() {
+			this.classList.toggle('active');
+			settings.animations = this.classList.contains('active');
+			if (settings.animations) {
+				document.body.classList.remove('hover-off');
+			} else {
+				document.body.classList.add('hover-off');
+			}
+			localStorage.setItem('animations', settings.animations);
+		};
+
+		// Glow Toggle
+		document.getElementById('glow-toggle').onclick = function() {
+			this.classList.toggle('active');
+			settings.glow = this.classList.contains('active');
+			if (settings.glow) {
+				document.body.classList.add('glow-on');
+			} else {
+				document.body.classList.remove('glow-on');
+			}
+			localStorage.setItem('glow', settings.glow);
+		};
+
+		// Shadow Toggle
+		document.getElementById('shadow-toggle').onclick = function() {
+			this.classList.toggle('active');
+			settings.shadow = this.classList.contains('active');
+			localStorage.setItem('shadow', settings.shadow);
+		};
+
+		// Autoload Toggle
+		document.getElementById('autoload-toggle').onclick = function() {
+			this.classList.toggle('active');
+			settings.autoload = this.classList.contains('active');
+			localStorage.setItem('autoload', settings.autoload);
+		};
+
+		// Sound Toggle
+		document.getElementById('sound-toggle').onclick = function() {
+			this.classList.toggle('active');
+			settings.sound = this.classList.contains('active');
+			localStorage.setItem('sound', settings.sound);
+		};
+
+		// Playcount Toggle
+		document.getElementById('playcount-toggle').onclick = function() {
+			this.classList.toggle('active');
+			settings.playcount = this.classList.contains('active');
+			localStorage.setItem('playcount', settings.playcount);
+		};
+
+		// Hover Effect Toggle
+		document.getElementById('hover-effect').onclick = function() {
+			this.classList.toggle('active');
+			settings.hoverEffect = this.classList.contains('active');
+			if (!settings.hoverEffect) {
+				document.body.classList.add('hover-off');
+			} else {
+				document.body.classList.remove('hover-off');
+			}
+			localStorage.setItem('hoverEffect', settings.hoverEffect);
+		};
+
+		// Smooth Scroll Toggle
+		document.getElementById('smooth-scroll').onclick = function() {
+			this.classList.toggle('active');
+			settings.smoothScroll = this.classList.contains('active');
+			if (settings.smoothScroll) {
+				document.documentElement.style.scrollBehavior = 'smooth';
+			} else {
+				document.documentElement.style.scrollBehavior = 'auto';
+			}
+			localStorage.setItem('smoothScroll', settings.smoothScroll);
+		};
+
+		// Background Options
+		const bgOptions = document.querySelectorAll('.bg-option');
+		bgOptions.forEach(opt => {
+			opt.onclick = () => {
+				bgOptions.forEach(o => o.classList.remove('active'));
+				opt.classList.add('active');
+				const bgType = opt.dataset.bg;
+				document.body.classList.forEach(cls => {
+					if (cls.startsWith('bg-')) {
+						document.body.classList.remove(cls);
+					}
+				});
+				if (bgType !== 'none') {
+					document.body.classList.add('bg-' + bgType);
+				}
+				settings.bgEffect = bgType;
+				localStorage.setItem('bgEffect', bgType);
+			};
+		});
+
+		// Background Speed
+		document.getElementById('bg-speed').oninput = function() {
+			settings.bgSpeed = this.value;
+			localStorage.setItem('bgSpeed', this.value);
+		};
+
+		// Grid Size
+		document.getElementById('grid-size').onchange = function() {
+			settings.gridSize = this.value;
+			updateGridSize();
+			localStorage.setItem('gridSize', this.value);
+		};
+
+		// Clear Favorites
+		document.getElementById('clear-favorites').onclick = () => {
+			if (confirm('Clear all favorites?')) {
+				favorites.clear();
+				localStorage.setItem('favorites', '[]');
+				renderGames();
+				alert('Favorites cleared!');
+			}
+		};
+
+		// Clear Cache
+		document.getElementById('clear-cache').onclick = () => {
+			if (confirm('Clear all cached data?')) {
+				alert('Cache cleared!');
+			}
+		};
+
+		// Reset Settings
+		document.getElementById('reset-settings').onclick = () => {
+			if (confirm('Reset all settings to defaults?')) {
+				localStorage.clear();
+				location.reload();
+			}
+		};
+
+		// Info Modal
+		const infoBtn = document.getElementById('info-btn');
+		const infoModal = document.getElementById('info-modal');
+		const saveInfoBtn = document.getElementById('save-info');
+		const closeInfoBtn = document.getElementById('close-info');
+		const infoTextarea = document.getElementById('info-textarea');
+
+		infoBtn.onclick = () => {
+			infoTextarea.value = localStorage.getItem('userInfo') || '';
+			infoModal.classList.add('on');
+		};
+
+		saveInfoBtn.onclick = () => {
+			localStorage.setItem('userInfo', infoTextarea.value);
+			alert('Information saved!');
+		};
+
+		closeInfoBtn.onclick = () => {
+			infoModal.classList.remove('on');
+		};
+
+		// Close modal when clicking close button
+		document.querySelector('.mbclose').onclick = closeGameModal;
+
+		// Search functionality
+		let currentSearchQuery = '';
+		document.getElementById('search').addEventListener('input', (e) => {
+			currentSearchQuery = e.target.value;
+			const query = currentSearchQuery.toLowerCase();
+			const filtered = allGames.filter(g => g.n.toLowerCase().includes(query));
+			renderGames(filtered, currentSearchQuery);
+		});
+
+		// Exit fullscreen
+		document.getElementById('fs-btn').onclick = () => {
+			document.getElementById('overlay').classList.remove('on');
+			document.getElementById('gframe').src = '';
+			document.getElementById('gload').classList.remove('hide');
+		};
+
+		// Back button
+		document.getElementById('bk-btn').onclick = () => {
+			document.getElementById('overlay').classList.remove('on');
+			document.getElementById('gframe').src = '';
+			document.getElementById('gload').classList.remove('hide');
+		};
+
+		// Initialize
+		loadSettings();
+		renderGames();
+		if (settings.smoothScroll) {
+			document.documentElement.style.scrollBehavior = 'smooth';
+		}
+	</script>
 </body>
+
 </html>
