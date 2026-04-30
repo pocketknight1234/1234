@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<title>MathLine</title>
 	<link rel="icon" type="image/svg+xml"
-		href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23E31717'/%3E%3Ccircle cx='50' cy='50' r='33' fill='none' stroke='%23FFF' stroke-width='3'/%3E%3C/svg%3E" />
+		href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23E31717'/%3E%3Ccircle cx='50' cy='50' r='33' fill='none' stroke='%23E31717' stroke-width='3'/%3E%3C/svg%3E" />
 	<style>
 		:root {
 			--accent: #fff;
@@ -20,6 +20,7 @@
 			--card-hover: #1c2128;
 			--theme: 'dark';
 			--bg-style: 'stars';
+			--bg-brightness: 0.3;
 		}
 
 		*,
@@ -57,6 +58,7 @@
 			background-repeat: repeat;
 			background-size: 200px 200px;
 			animation: twinkle 5s ease-in-out infinite;
+			opacity: var(--bg-brightness);
 		}
 
 		body.bg-none::before {
@@ -65,7 +67,7 @@
 
 		body.bg-rain::before {
 			background-image:
-				linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent),
+				linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent 100%),
 				linear-gradient(rgba(255, 255, 255, .03) 1px, transparent 1px);
 			background-size: 50px 50px;
 			animation: rain 0.3s linear infinite;
@@ -112,11 +114,11 @@
 
 			0%,
 			100% {
-				opacity: 0.3;
+				opacity: calc(var(--bg-brightness) * 0.5);
 			}
 
 			50% {
-				opacity: 0.8;
+				opacity: calc(var(--bg-brightness) * 1.5);
 			}
 		}
 
@@ -144,11 +146,11 @@
 
 			0%,
 			100% {
-				opacity: 0.3;
+				opacity: calc(var(--bg-brightness) * 0.5);
 			}
 
 			50% {
-				opacity: 0.6;
+				opacity: calc(var(--bg-brightness) * 1.5);
 			}
 		}
 
@@ -667,7 +669,7 @@
 			background: rgba(255, 255, 255, .18);
 		}
 
-		/* Settings Drawer - RIGHT SIDE */
+		/* Settings Drawer */
 		#settings-drawer {
 			position: fixed;
 			right: -420px;
@@ -716,51 +718,12 @@
 			color: #fff;
 		}
 
-		.settings-tabs {
-			display: flex;
-			gap: 0;
-			border-bottom: 1px solid rgba(255, 255, 255, .1);
-			padding: 0;
-			flex-shrink: 0;
-		}
-
-		.settings-tab {
-			flex: 1;
-			padding: 12px 10px;
-			border: none;
-			background: rgba(255, 255, 255, .05);
-			color: rgba(255, 255, 255, .5);
-			cursor: pointer;
-			font-size: 12px;
-			font-weight: 600;
-			transition: all .2s;
-			border-bottom: 2px solid transparent;
-		}
-
-		.settings-tab:hover {
-			background: rgba(255, 255, 255, .1);
-		}
-
-		.settings-tab.active {
-			background: rgba(255, 255, 255, .08);
-			color: #fff;
-			border-bottom-color: #fff;
-		}
-
 		.settings-content {
 			flex: 1;
 			overflow-y: auto;
 			scrollbar-width: thin;
 			scrollbar-color: rgba(255, 255, 255, .1) transparent;
-		}
-
-		.settings-panel {
-			display: none;
 			padding: 16px 18px;
-		}
-
-		.settings-panel.active {
-			display: block;
 		}
 
 		.settings-group {
@@ -777,76 +740,6 @@
 			margin-bottom: 12px;
 		}
 
-		.settings-option {
-			margin-bottom: 14px;
-		}
-
-		.settings-option label {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			cursor: pointer;
-			font-size: 14px;
-			color: rgba(255, 255, 255, .8);
-		}
-
-		.settings-toggle {
-			width: 40px;
-			height: 22px;
-			background: rgba(255, 255, 255, .1);
-			border: none;
-			border-radius: 12px;
-			cursor: pointer;
-			position: relative;
-			transition: background .2s;
-			margin-left: auto;
-			flex-shrink: 0;
-		}
-
-		.settings-toggle::after {
-			content: '';
-			position: absolute;
-			width: 18px;
-			height: 18px;
-			background: #fff;
-			border-radius: 50%;
-			top: 2px;
-			left: 2px;
-			transition: left .2s;
-		}
-
-		.settings-toggle.active {
-			background: rgba(255, 255, 255, .3);
-		}
-
-		.settings-toggle.active::after {
-			left: 20px;
-		}
-
-		.settings-buttons {
-			display: flex;
-			flex-direction: column;
-			gap: 8px;
-		}
-
-		.settings-btn {
-			padding: 10px;
-			border: none;
-			border-radius: 8px;
-			background: rgba(255, 255, 255, .1);
-			color: #fff;
-			cursor: pointer;
-			font-weight: 600;
-			font-size: 13px;
-			text-align: center;
-			transition: background .2s;
-			border: 1px solid rgba(255, 255, 255, .2);
-		}
-
-		.settings-btn:hover {
-			background: rgba(255, 255, 255, .18);
-		}
-
 		.settings-description {
 			font-size: 12px;
 			color: rgba(255, 255, 255, .35);
@@ -854,33 +747,51 @@
 			line-height: 1.4;
 		}
 
-		.bg-grid-options {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 10px;
-		}
-
-		.bg-option {
-			padding: 12px;
-			border: 2px solid rgba(255, 255, 255, .15);
-			border-radius: 8px;
-			background: rgba(255, 255, 255, .05);
-			color: #fff;
-			cursor: pointer;
-			font-size: 12px;
-			font-weight: 600;
-			text-align: center;
-			transition: all .2s;
-		}
-
-		.bg-option:hover {
-			border-color: rgba(255, 255, 255, .3);
+		/* Brightness Slider Styles */
+		.brightness-slider {
+			width: 100%;
+			height: 6px;
+			border-radius: 3px;
 			background: rgba(255, 255, 255, .1);
+			outline: none;
+			-webkit-appearance: none;
+			appearance: none;
+			margin: 12px 0;
 		}
 
-		.bg-option.active {
-			border-color: #fff;
-			background: rgba(255, 255, 255, .15);
+		.brightness-slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: #fff;
+			cursor: pointer;
+			box-shadow: 0 0 8px rgba(255, 255, 255, .5);
+		}
+
+		.brightness-slider::-moz-range-thumb {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: #fff;
+			cursor: pointer;
+			border: none;
+			box-shadow: 0 0 8px rgba(255, 255, 255, .5);
+		}
+
+		.brightness-label {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-size: 12px;
+			color: rgba(255, 255, 255, .6);
+			margin-bottom: 8px;
+		}
+
+		.brightness-value {
+			color: rgba(255, 255, 255, .8);
+			font-weight: 600;
 		}
 
 		/* Info Modal */
@@ -999,7 +910,47 @@
 		</div>
 	</div>
 
+	<!-- Settings Drawer -->
+	<div id="settings-drawer">
+		<div class="settings-header">
+			<h2>Settings</h2>
+			<button class="settings-close-btn" id="settings-close-btn">✕</button>
+		</div>
+		<div class="settings-content">
+			<div class="settings-group">
+				<span class="settings-group-title">Background Brightness</span>
+				<div class="brightness-label">
+					<span>Adjust brightness:</span>
+					<span class="brightness-value" id="brightness-value">30%</span>
+				</div>
+				<input type="range" id="brightness-slider" class="brightness-slider" min="0" max="100" value="30">
+				<p class="settings-description">Increase brightness to see grid lines, dots, and other background patterns more clearly.</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Game Modal -->
+	<div class="modal" id="game-modal">
+		<div class="modal-box">
+			<div class="modal-thumb">
+				<div class="modal-thumb-grad" id="modal-thumb-grad"></div>
+				<div class="modal-thumb-title" id="modal-thumb-title">A</div>
+			</div>
+			<div class="mtrow">
+				<h2 id="modal-game-name">Game Name</h2>
+				<button class="mfav" id="modal-fav">☆</button>
+			</div>
+			<div id="game-stats"></div>
+			<div class="mbtns">
+				<button class="mbplay" id="play-game-btn">Play</button>
+				<button class="mbclose" id="close-game-modal">Close</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Overlay for Game -->
 	<div id="overlay">
+		<iframe id="gframe"></iframe>
 		<div id="gload">
 			<div class="spin"></div>
 			<div id="bar-lbl">Loading...</div>
@@ -1007,197 +958,8 @@
 				<div id="bar"></div>
 			</div>
 		</div>
-		<iframe id="gframe"></iframe>
-		<button id="fs-btn">Exit Fullscreen</button>
-		<button id="bk-btn">Back</button>
-	</div>
-
-	<div class="modal" id="game-modal">
-		<div class="modal-box">
-			<div class="modal-thumb">
-				<div class="modal-thumb-grad"></div>
-				<div class="modal-thumb-title" id="modal-icon">🎮</div>
-			</div>
-			<div class="mtrow">
-				<h2 id="modal-title">Game Name</h2>
-				<button class="mfav" id="modal-fav">☆</button>
-			</div>
-			<div id="modal-stats"></div>
-			<div class="mbtns">
-				<button class="mbplay" id="modal-play">Play Now</button>
-				<button class="mbclose">Close</button>
-			</div>
-		</div>
-	</div>
-
-	<!-- Settings Drawer - RIGHT SIDE -->
-	<div id="settings-drawer">
-		<div class="settings-header">
-			<h2>Settings</h2>
-			<button class="settings-close-btn">✕</button>
-		</div>
-
-		<div class="settings-tabs">
-			<button class="settings-tab active" data-tab="appearance">Appearance</button>
-			<button class="settings-tab" data-tab="background">Background</button>
-			<button class="settings-tab" data-tab="gameplay">Gameplay</button>
-			<button class="settings-tab" data-tab="advanced">Advanced</button>
-		</div>
-
-		<div class="settings-content">
-			<!-- Appearance Tab -->
-			<div class="settings-panel active" data-panel="appearance">
-				<div class="settings-group">
-					<span class="settings-group-title">Theme</span>
-					<div class="settings-option">
-						<label>
-							<span>Dark Only (No Light Mode)</span>
-						</label>
-						<div class="settings-description">This app features dark theme optimized design</div>
-					</div>
-				</div>
-
-				<div class="settings-group">
-					<span class="settings-group-title">Visual Effects</span>
-					<div class="settings-option">
-						<label>
-							<span>Card Animations</span>
-							<button class="settings-toggle active" id="animation-toggle"></button>
-						</label>
-						<div class="settings-description">Enable smooth card hover transitions</div>
-					</div>
-					<div class="settings-option">
-						<label>
-							<span>Glow Effects</span>
-							<button class="settings-toggle" id="glow-toggle"></button>
-						</label>
-						<div class="settings-description">Add glow effect to cards on hover</div>
-					</div>
-				</div>
-
-				<div class="settings-group">
-					<span class="settings-group-title">Interface</span>
-					<div class="settings-option">
-						<label>
-							<span>Text Shadows</span>
-							<button class="settings-toggle active" id="shadow-toggle"></button>
-						</label>
-						<div class="settings-description">Add shadows to text elements</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Background Tab -->
-			<div class="settings-panel" data-panel="background">
-				<div class="settings-group">
-					<span class="settings-group-title">Background Effects</span>
-					<div class="bg-grid-options">
-						<button class="bg-option active" data-bg="stars">Stars</button>
-						<button class="bg-option" data-bg="rain">Rain</button>
-						<button class="bg-option" data-bg="grid">Grid</button>
-						<button class="bg-option" data-bg="dots">Dots</button>
-						<button class="bg-option" data-bg="lines">Lines</button>
-						<button class="bg-option" data-bg="waves">Waves</button>
-						<button class="bg-option" data-bg="nebula">Nebula</button>
-						<button class="bg-option" data-bg="none">None</button>
-					</div>
-					<div class="settings-description">Choose your preferred background effect</div>
-				</div>
-
-				<div class="settings-group">
-					<span class="settings-group-title">Background Settings</span>
-					<div class="settings-option">
-						<label>
-							<span>Animation Speed</span>
-							<input type="range" min="1" max="10" value="5" id="bg-speed" style="width: 60px; margin-left: auto;">
-						</label>
-						<div class="settings-description">Adjust background animation speed</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Gameplay Tab -->
-			<div class="settings-panel" data-panel="gameplay">
-				<div class="settings-group">
-					<span class="settings-group-title">Game Settings</span>
-					<div class="settings-option">
-						<label>
-							<span>Auto-Load Games</span>
-							<button class="settings-toggle active" id="autoload-toggle"></button>
-						</label>
-						<div class="settings-description">Automatically load games when selected</div>
-					</div>
-					<div class="settings-option">
-						<label>
-							<span>Sound Effects</span>
-							<button class="settings-toggle" id="sound-toggle"></button>
-						</label>
-						<div class="settings-description">Play sounds when interacting</div>
-					</div>
-					<div class="settings-option">
-						<label>
-							<span>Show Play Count</span>
-							<button class="settings-toggle" id="playcount-toggle"></button>
-						</label>
-						<div class="settings-description">Display how many times games are played</div>
-					</div>
-				</div>
-
-				<div class="settings-group">
-					<span class="settings-group-title">Favorites</span>
-					<div class="settings-buttons">
-						<button class="settings-btn" id="clear-favorites">Clear All Favorites</button>
-					</div>
-					<div class="settings-description">Remove all saved favorite games</div>
-				</div>
-			</div>
-
-			<!-- Advanced Tab -->
-			<div class="settings-panel" data-panel="advanced">
-				<div class="settings-group">
-					<span class="settings-group-title">Performance</span>
-					<div class="settings-option">
-						<label>
-							<span>Card Hover Effect</span>
-							<button class="settings-toggle active" id="hover-effect"></button>
-						</label>
-						<div class="settings-description">Enable 3D transform on card hover</div>
-					</div>
-					<div class="settings-option">
-						<label>
-							<span>Smooth Scrolling</span>
-							<button class="settings-toggle active" id="smooth-scroll"></button>
-						</label>
-						<div class="settings-description">Enable smooth scroll behavior</div>
-					</div>
-				</div>
-
-				<div class="settings-group">
-					<span class="settings-group-title">Card Display</span>
-					<div class="settings-option">
-						<label>
-							<span>Grid Size</span>
-							<select id="grid-size" style="margin-left: auto; padding: 5px 8px; background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.2); border-radius: 4px;">
-								<option value="140">Small</option>
-								<option value="160" selected>Normal</option>
-								<option value="180">Large</option>
-								<option value="200">Extra Large</option>
-							</select>
-						</label>
-						<div class="settings-description">Adjust game card size in grid</div>
-					</div>
-				</div>
-
-				<div class="settings-group">
-					<span class="settings-group-title">Memory & Cache</span>
-					<div class="settings-buttons">
-						<button class="settings-btn" id="clear-cache">Clear Cache</button>
-						<button class="settings-btn" id="reset-settings">Reset All Settings</button>
-					</div>
-					<div class="settings-description">Clear stored data and reset to defaults</div>
-				</div>
-			</div>
-		</div>
+		<button id="fs-btn">Fullscreen</button>
+		<button id="bk-btn">← Back</button>
 	</div>
 
 	<!-- Info Modal -->
@@ -1334,368 +1096,148 @@
 			hoverEffect: localStorage.getItem('hoverEffect') !== 'false',
 			smoothScroll: localStorage.getItem('smoothScroll') !== 'false',
 			gridSize: localStorage.getItem('gridSize') || '160',
-			playcount: localStorage.getItem('playcount') === 'true'
+			playcount: localStorage.getItem('playcount') === 'true',
+			bgBrightness: localStorage.getItem('bgBrightness') || '30'
 		};
 
-		// Load settings
-		function loadSettings() {
-			if (!settings.animations) {
-				document.body.classList.add('hover-off');
-			}
-			if (settings.glow) {
-				document.body.classList.add('glow-on');
-			}
-			if (!settings.hoverEffect) {
-				document.body.classList.add('hover-off');
-			}
-			document.body.classList.add('bg-' + settings.bgEffect);
-			document.getElementById('grid-size').value = settings.gridSize;
-			updateGridSize();
+		// Initialize brightness from localStorage
+		function initBrightness() {
+			const brightness = settings.bgBrightness;
+			document.getElementById('brightness-slider').value = brightness;
+			updateBrightness(brightness);
 		}
 
-		function updateGridSize() {
-			const size = settings.gridSize;
+		// Brightness slider event listener
+		document.getElementById('brightness-slider').addEventListener('input', (e) => {
+			const value = e.target.value;
+			updateBrightness(value);
+			settings.bgBrightness = value;
+			localStorage.setItem('bgBrightness', value);
+		});
+
+		function updateBrightness(value) {
+			document.documentElement.style.setProperty('--bg-brightness', value / 100);
+			document.getElementById('brightness-value').textContent = value + '%';
+		}
+
+		// Settings drawer toggle
+		document.getElementById('settings-btn').addEventListener('click', () => {
+			document.getElementById('settings-drawer').classList.add('open');
+		});
+
+		document.getElementById('settings-close-btn').addEventListener('click', () => {
+			document.getElementById('settings-drawer').classList.remove('open');
+		});
+
+		// Info modal
+		document.getElementById('info-btn').addEventListener('click', () => {
+			document.getElementById('info-modal').classList.add('on');
+			document.getElementById('info-textarea').value = localStorage.getItem('notes') || '';
+		});
+
+		document.getElementById('close-info').addEventListener('click', () => {
+			document.getElementById('info-modal').classList.remove('on');
+		});
+
+		document.getElementById('save-info').addEventListener('click', () => {
+			const notes = document.getElementById('info-textarea').value;
+			localStorage.setItem('notes', notes);
+			alert('Notes saved!');
+		});
+
+		// Game list rendering
+		function renderGames() {
 			const gameList = document.getElementById('game-list');
-			gameList.style.gridTemplateColumns = `repeat(auto-fill, minmax(${size}px, 1fr))`;
-		}
-
-		function getSortedGames(gameList = allGames) {
-			return gameList.sort((a, b) => {
-				const aIsFav = favorites.has(a.n);
-				const bIsFav = favorites.has(b.n);
-				if (aIsFav && !bIsFav) return -1;
-				if (!aIsFav && bIsFav) return 1;
-				return 0;
-			});
-		}
-
-		function renderGames(gameList = allGames, searchQuery = '') {
-			const sortedGames = getSortedGames(gameList);
-			const container = document.getElementById('game-list');
-			container.innerHTML = '';
-
-			if (searchQuery.trim().length > 0) {
-				const reqCard = document.createElement('div');
-				reqCard.className = 'card req';
-				reqCard.innerHTML = `
-					<div class="card-thumb">
-						<div class="card-thumb-grad"></div>
-						<div class="card-initials">❓</div>
-					</div>
-					<div class="card-info">
-						<div class="card-name">Request a Game</div>
-					</div>
-				`;
-				reqCard.onclick = () => {
-					alert(`Game request for "${searchQuery}" has been noted!`);
-				};
-				container.appendChild(reqCard);
-			}
-
-			sortedGames.forEach(game => {
+			gameList.innerHTML = '';
+			allGames.forEach((game, idx) => {
 				const card = document.createElement('div');
 				card.className = 'card';
 				const isFav = favorites.has(game.n);
-				
 				card.innerHTML = `
 					<div class="card-thumb">
 						<div class="card-thumb-grad"></div>
 						<div class="card-initials">${game.n.charAt(0)}</div>
-						<button class="card-fav ${isFav ? 'card-faon' : ''}">★</button>
 					</div>
 					<div class="card-info">
 						<div class="card-name">${game.n}</div>
 					</div>
+					<button class="card-fav ${isFav ? 'card-faon' : ''}" data-fav="${game.n}">☆</button>
 				`;
-
-				card.onclick = () => showGameModal(game);
-				const favBtn = card.querySelector('.card-fav');
-				favBtn.onclick = (e) => {
+				card.addEventListener('click', () => showGameModal(game));
+				card.querySelector('.card-fav').addEventListener('click', (e) => {
 					e.stopPropagation();
-					toggleFavorite(game.n, favBtn);
-				};
-
-				container.appendChild(card);
+					toggleFavorite(game.n);
+					renderGames();
+				});
+				gameList.appendChild(card);
 			});
-
-			document.getElementById('game-count').textContent = `${sortedGames.length} games`;
+			document.getElementById('game-count').textContent = `${allGames.length} games`;
 		}
 
 		function showGameModal(game) {
-			const modal = document.getElementById('game-modal');
-			document.getElementById('modal-title').textContent = game.n;
-			document.getElementById('modal-icon').textContent = game.n.charAt(0);
-			
-			const isFav = favorites.has(game.n);
-			const favBtn = document.getElementById('modal-fav');
-			favBtn.textContent = isFav ? '★' : '☆';
-			if (isFav) {
-				favBtn.classList.add('mfaon');
-			} else {
-				favBtn.classList.remove('mfaon');
-			}
-
-			const stats = `
-				<div class="mstat"><span>Category:</span><b>${game.c}</b></div>
+			document.getElementById('modal-thumb-title').textContent = game.n.charAt(0);
+			document.getElementById('modal-game-name').textContent = game.n;
+			document.getElementById('game-stats').innerHTML = `
+				<div class="mstat"><b>Category:</b> <span>${game.c}</span></div>
 			`;
-			document.getElementById('modal-stats').innerHTML = stats;
-
-			const playBtn = document.getElementById('modal-play');
-			playBtn.onclick = () => playGame(game);
-
-			const modalFav = document.getElementById('modal-fav');
-			modalFav.onclick = (e) => {
-				e.stopPropagation();
-				toggleFavorite(game.n, modalFav);
-			};
-
-			modal.classList.add('on');
-		}
-
-		function closeGameModal() {
-			document.getElementById('game-modal').classList.remove('on');
-		}
-
-		function playGame(game) {
-			closeGameModal();
-			if (settings.autoload) {
-				const overlay = document.getElementById('overlay');
-				overlay.classList.add('on');
-				document.getElementById('gframe').src = game.u;
-
-				setTimeout(() => {
-					document.getElementById('gload').classList.add('hide');
-				}, 2000);
+			if (favorites.has(game.n)) {
+				document.getElementById('modal-fav').classList.add('mfaon');
+			} else {
+				document.getElementById('modal-fav').classList.remove('mfaon');
 			}
+			document.getElementById('play-game-btn').onclick = () => playGame(game.u);
+			document.getElementById('close-game-modal').onclick = () => {
+				document.getElementById('game-modal').classList.remove('on');
+			};
+			document.getElementById('modal-fav').onclick = () => {
+				toggleFavorite(game.n);
+				showGameModal(game);
+			};
+			document.getElementById('game-modal').classList.add('on');
 		}
 
-		function toggleFavorite(gameName, button) {
+		function toggleFavorite(gameName) {
 			if (favorites.has(gameName)) {
 				favorites.delete(gameName);
-				button.classList.remove('card-faon', 'mfaon');
-				button.textContent = '☆';
 			} else {
 				favorites.add(gameName);
-				button.classList.add('card-faon', 'mfaon');
-				button.textContent = '★';
 			}
 			localStorage.setItem('favorites', JSON.stringify([...favorites]));
-			renderGames();
 		}
 
-		// Settings Drawer
-		const settingsBtn = document.getElementById('settings-btn');
-		const settingsDrawer = document.getElementById('settings-drawer');
-		const settingsCloseBtn = document.querySelector('.settings-close-btn');
+		function playGame(url) {
+			document.getElementById('overlay').classList.add('on');
+			document.getElementById('gload').classList.remove('hide');
+			document.getElementById('gframe').src = url;
+			document.getElementById('game-modal').classList.remove('on');
 
-		settingsBtn.onclick = () => {
-			settingsDrawer.classList.add('open');
-		};
+			setTimeout(() => {
+				document.getElementById('gload').classList.add('hide');
+			}, 3000);
+		}
 
-		settingsCloseBtn.onclick = () => {
-			settingsDrawer.classList.remove('open');
-		};
-
-		// Settings Tabs
-		const settingsTabs = document.querySelectorAll('.settings-tab');
-		const settingsPanels = document.querySelectorAll('.settings-panel');
-
-		settingsTabs.forEach(tab => {
-			tab.onclick = () => {
-				settingsTabs.forEach(t => t.classList.remove('active'));
-				settingsPanels.forEach(p => p.classList.remove('active'));
-				tab.classList.add('active');
-				document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
-			};
+		document.getElementById('bk-btn').addEventListener('click', () => {
+			document.getElementById('overlay').classList.remove('on');
+			document.getElementById('gframe').src = '';
 		});
 
-		// Animation Toggle
-		document.getElementById('animation-toggle').onclick = function() {
-			this.classList.toggle('active');
-			settings.animations = this.classList.contains('active');
-			if (settings.animations) {
-				document.body.classList.remove('hover-off');
-			} else {
-				document.body.classList.add('hover-off');
+		document.getElementById('fs-btn').addEventListener('click', () => {
+			const elem = document.getElementById('gframe');
+			if (elem.requestFullscreen) {
+				elem.requestFullscreen();
 			}
-			localStorage.setItem('animations', settings.animations);
-		};
-
-		// Glow Toggle
-		document.getElementById('glow-toggle').onclick = function() {
-			this.classList.toggle('active');
-			settings.glow = this.classList.contains('active');
-			if (settings.glow) {
-				document.body.classList.add('glow-on');
-			} else {
-				document.body.classList.remove('glow-on');
-			}
-			localStorage.setItem('glow', settings.glow);
-		};
-
-		// Shadow Toggle
-		document.getElementById('shadow-toggle').onclick = function() {
-			this.classList.toggle('active');
-			settings.shadow = this.classList.contains('active');
-			localStorage.setItem('shadow', settings.shadow);
-		};
-
-		// Autoload Toggle
-		document.getElementById('autoload-toggle').onclick = function() {
-			this.classList.toggle('active');
-			settings.autoload = this.classList.contains('active');
-			localStorage.setItem('autoload', settings.autoload);
-		};
-
-		// Sound Toggle
-		document.getElementById('sound-toggle').onclick = function() {
-			this.classList.toggle('active');
-			settings.sound = this.classList.contains('active');
-			localStorage.setItem('sound', settings.sound);
-		};
-
-		// Playcount Toggle
-		document.getElementById('playcount-toggle').onclick = function() {
-			this.classList.toggle('active');
-			settings.playcount = this.classList.contains('active');
-			localStorage.setItem('playcount', settings.playcount);
-		};
-
-		// Hover Effect Toggle
-		document.getElementById('hover-effect').onclick = function() {
-			this.classList.toggle('active');
-			settings.hoverEffect = this.classList.contains('active');
-			if (!settings.hoverEffect) {
-				document.body.classList.add('hover-off');
-			} else {
-				document.body.classList.remove('hover-off');
-			}
-			localStorage.setItem('hoverEffect', settings.hoverEffect);
-		};
-
-		// Smooth Scroll Toggle
-		document.getElementById('smooth-scroll').onclick = function() {
-			this.classList.toggle('active');
-			settings.smoothScroll = this.classList.contains('active');
-			if (settings.smoothScroll) {
-				document.documentElement.style.scrollBehavior = 'smooth';
-			} else {
-				document.documentElement.style.scrollBehavior = 'auto';
-			}
-			localStorage.setItem('smoothScroll', settings.smoothScroll);
-		};
-
-		// Background Options
-		const bgOptions = document.querySelectorAll('.bg-option');
-		bgOptions.forEach(opt => {
-			opt.onclick = () => {
-				bgOptions.forEach(o => o.classList.remove('active'));
-				opt.classList.add('active');
-				const bgType = opt.dataset.bg;
-				document.body.classList.forEach(cls => {
-					if (cls.startsWith('bg-')) {
-						document.body.classList.remove(cls);
-					}
-				});
-				if (bgType !== 'none') {
-					document.body.classList.add('bg-' + bgType);
-				}
-				settings.bgEffect = bgType;
-				localStorage.setItem('bgEffect', bgType);
-			};
 		});
-
-		// Background Speed
-		document.getElementById('bg-speed').oninput = function() {
-			settings.bgSpeed = this.value;
-			localStorage.setItem('bgSpeed', this.value);
-		};
-
-		// Grid Size
-		document.getElementById('grid-size').onchange = function() {
-			settings.gridSize = this.value;
-			updateGridSize();
-			localStorage.setItem('gridSize', this.value);
-		};
-
-		// Clear Favorites
-		document.getElementById('clear-favorites').onclick = () => {
-			if (confirm('Clear all favorites?')) {
-				favorites.clear();
-				localStorage.setItem('favorites', '[]');
-				renderGames();
-				alert('Favorites cleared!');
-			}
-		};
-
-		// Clear Cache
-		document.getElementById('clear-cache').onclick = () => {
-			if (confirm('Clear all cached data?')) {
-				alert('Cache cleared!');
-			}
-		};
-
-		// Reset Settings
-		document.getElementById('reset-settings').onclick = () => {
-			if (confirm('Reset all settings to defaults?')) {
-				localStorage.clear();
-				location.reload();
-			}
-		};
-
-		// Info Modal
-		const infoBtn = document.getElementById('info-btn');
-		const infoModal = document.getElementById('info-modal');
-		const saveInfoBtn = document.getElementById('save-info');
-		const closeInfoBtn = document.getElementById('close-info');
-		const infoTextarea = document.getElementById('info-textarea');
-
-		infoBtn.onclick = () => {
-			infoTextarea.value = localStorage.getItem('userInfo') || '';
-			infoModal.classList.add('on');
-		};
-
-		saveInfoBtn.onclick = () => {
-			localStorage.setItem('userInfo', infoTextarea.value);
-			alert('Information saved!');
-		};
-
-		closeInfoBtn.onclick = () => {
-			infoModal.classList.remove('on');
-		};
-
-		// Close modal when clicking close button
-		document.querySelector('.mbclose').onclick = closeGameModal;
 
 		// Search functionality
-		let currentSearchQuery = '';
 		document.getElementById('search').addEventListener('input', (e) => {
-			currentSearchQuery = e.target.value;
-			const query = currentSearchQuery.toLowerCase();
-			const filtered = allGames.filter(g => g.n.toLowerCase().includes(query));
-			renderGames(filtered, currentSearchQuery);
+			const query = e.target.value.toLowerCase();
+			allGames = GAMES.filter(g => g.n.toLowerCase().includes(query));
+			renderGames();
 		});
 
-		// Exit fullscreen
-		document.getElementById('fs-btn').onclick = () => {
-			document.getElementById('overlay').classList.remove('on');
-			document.getElementById('gframe').src = '';
-			document.getElementById('gload').classList.remove('hide');
-		};
-
-		// Back button
-		document.getElementById('bk-btn').onclick = () => {
-			document.getElementById('overlay').classList.remove('on');
-			document.getElementById('gframe').src = '';
-			document.getElementById('gload').classList.remove('hide');
-		};
-
 		// Initialize
-		loadSettings();
+		initBrightness();
 		renderGames();
-		if (settings.smoothScroll) {
-			document.documentElement.style.scrollBehavior = 'smooth';
-		}
 	</script>
 </body>
 
